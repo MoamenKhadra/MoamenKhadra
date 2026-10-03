@@ -210,7 +210,7 @@ export default defineConfig({
       // of the default `prefers-color-scheme` media query so the theme
       // toggle in the sidebar takes effect immediately.
       themeCssSelector: (theme) =>
-        `[data-theme='${theme.type === 'dark' ? 'chirpy-dark' : 'chirpy-light'}']`,
+        `[data-theme='${theme.type === 'dark' ? 'black' : 'lofi'}']`,
       useDarkModeMediaQuery: false,
       shiki: {
         langAlias: {
