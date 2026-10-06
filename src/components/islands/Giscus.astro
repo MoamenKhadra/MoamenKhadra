@@ -82,7 +82,7 @@ const setupSteps = [
         data-emit-metadata={GISCUS.emitMetadata}
         data-input-position={GISCUS.inputPosition}
         data-loading={GISCUS.loading}
-        data-locale={locale === 'fr' ? 'fr' : 'en'}
+        data-locale={locale === 'ar' ? 'ar' : 'en'}
       />
     )
   }
@@ -102,7 +102,7 @@ const setupSteps = [
         <div class="min-w-0 flex-1">
           <p class="text-base-content text-base font-semibold">{t('post.commentsSetupTitle')}</p>
           <p class="text-base-content/70 mt-1">{t('post.commentsSetupBody')}</p>
-          <ol class="text-base-content/80 marker:text-base-content/50 mt-4 list-decimal space-y-1.5 pl-5 marker:font-semibold">
+          <ol class="text-base-content/80 marker:text-base-content/50 mt-4 list-decimal space-y-1.5 ps-5 marker:font-semibold">
             {setupSteps.map((step) => (
               <li set:html={renderInlineCode(step)} />
             ))}

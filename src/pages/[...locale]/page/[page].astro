@@ -1,58 +1,49 @@
 ---
-import BaseLayout from '~/layouts/BaseLayout.astro';
-import PostList from '~/components/PostList.astro';
-import Pagination from '~/components/Pagination.astro';
-import { SITE } from '~/config';
-import { localizedPath, useTranslations } from '~/i18n/utils';
+/**
+ * Legacy pagination redirect.
+ *
+ * The blog feed moved from `/page/N` to `/blog/page/N`. This route keeps
+ * the old URLs alive by emitting a static meta-refresh page for every
+ * historical pagination number (the standard redirect mechanism for
+ * static hosts, which can't send real 301 responses).
+ */
+import type { GetStaticPaths } from 'astro';
+import { SITE, type Locale } from '~/config';
+import { localizedPath, htmlLang, htmlDir } from '~/i18n/utils';
 import { getPosts } from '~/utils/posts';
 
 interface Props {
+  locale: Locale;
   current: number;
-  last: number;
-  locale: any;
 }
 
-export async function getStaticPaths() {
+export const getStaticPaths: GetStaticPaths = async () => {
   let paths = [];
   for (const locale of SITE.locales) {
     const allPosts = await getPosts(locale);
     const totalPages = Math.ceil(allPosts.length / SITE.postsPerPage);
     const localeParams = { locale: locale === SITE.defaultLocale ? undefined : locale };
-    // Skip page 1 (handled by index.astro)
     for (let i = 2; i <= totalPages; i++) {
-      paths.push({
-        params: { ...localeParams, page: String(i) },
-        props: { locale, current: i, last: totalPages },
-      });
+      paths.push({ params: { ...localeParams, page: String(i) }, props: { locale, current: i } });
     }
   }
   return paths;
-}
+};
 
-const { locale } = Astro.props;
-const t = useTranslations(locale);
-const { current, last } = Astro.props as Props;
-const allPosts = await getPosts(locale);
-const pageSize = SITE.postsPerPage;
-const start = (current - 1) * pageSize;
-const pagePosts = allPosts.slice(start, start + pageSize);
-
-const hrefForPage = (n: number) => localizedPath(n === 1 ? '/' : `/page/${n}/`, locale);
+const { locale, current } = Astro.props as Props;
+const target = localizedPath(`/blog/page/${current}/`, locale);
 ---
 
-<BaseLayout
-  title={`${t('list.allPosts')} — ${t('pagination.page')} ${current}`}
-  pathWithoutLocale={`/page/${current}/`}
->
-  <header class="mb-6">
-    <h1 class="text-3xl font-bold tracking-tight">{t('list.allPosts')}</h1>
-    <p class="text-base-content/70 text-sm">
-      {t('pagination.page')}
-      {current}
-      {t('pagination.of')}
-      {last}
-    </p>
-  </header>
-  <PostList posts={pagePosts} locale={locale} />
-  <Pagination currentPage={current} lastPage={last} hrefForPage={hrefForPage} locale={locale} />
-</BaseLayout>
+<!doctype html>
+<html lang={htmlLang(locale)} dir={htmlDir(locale)}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Redirecting…</title>
+    <link rel="canonical" href={target} />
+    <meta http-equiv="refresh" content={`0;url=${target}`} />
+  </head>
+  <body>
+    <p><a href={target}>{target}</a></p>
+  </body>
+</html>

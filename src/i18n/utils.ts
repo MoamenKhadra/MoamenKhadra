@@ -4,7 +4,7 @@
  *
  * Routing rules:
  *  - EN is the default locale and serves at the URL root with NO prefix.
- *  - FR is served under `/fr/...`.
+ *  - AR is served under `/ar/...`.
  *
  * Source-of-truth: `src/config.ts` -> SITE.locales / SITE.defaultLocale.
  */
@@ -13,6 +13,19 @@ import { SITE, type Locale } from '../config';
 import { messages, type UIKey } from './ui';
 
 const DEFAULT_LOCALE: Locale = SITE.defaultLocale;
+
+/**
+ * Intl language tags per locale. Arabic uses the Arabic language with the
+ * `latn` numbering system so digits in dates match the Latin digits used
+ * everywhere else in the UI.
+ */
+const INTL_LANG: Record<Locale, string> = {
+  en: 'en-US',
+  ar: 'ar-u-nu-latn',
+};
+
+/** Locales written right-to-left. */
+const RTL_LOCALES: readonly Locale[] = ['ar'];
 
 /** Configured base path (no trailing slash). E.g. '/chirping-astro' or ''. */
 const BASE = (import.meta.env.BASE_URL ?? '/').replace(/\/+$/, '');
@@ -38,8 +51,8 @@ export function localePrefix(locale: Locale): string {
  * Build a localized URL for the given pathname (without locale prefix).
  *
  *   localizedPath('/posts/foo', 'en') -> '/posts/foo'
- *   localizedPath('/posts/foo', 'fr') -> '/fr/posts/foo'
- *   localizedPath('/', 'fr')          -> '/fr/'
+ *   localizedPath('/posts/foo', 'ar') -> '/ar/posts/foo'
+ *   localizedPath('/', 'ar')          -> '/ar/'
  *
  * The configured `base` (e.g. `/chirping-astro`) is automatically
  * prefixed when set.
@@ -53,7 +66,7 @@ export function localizedPath(path: string, locale: Locale): string {
 
 /**
  * Detect the current locale from a URL or Astro.url.pathname.
- * Anything starting with `/fr` or `/fr/` resolves to 'fr'; otherwise
+ * Anything starting with `/ar` or `/ar/` resolves to 'ar'; otherwise
  * the default locale is returned.
  */
 export function detectLocale(pathname: string): Locale {
@@ -78,9 +91,9 @@ function stripBase(pathname: string): string {
 /**
  * Strip the locale prefix from a pathname so it can be relocalized.
  *
- *   stripLocale('/fr/posts/foo')  -> '/posts/foo'
+ *   stripLocale('/ar/posts/foo')  -> '/posts/foo'
  *   stripLocale('/posts/foo')     -> '/posts/foo'
- *   stripLocale('/fr')            -> '/'
+ *   stripLocale('/ar')            -> '/'
  */
 export function stripLocale(pathname: string): string {
   const p = stripBase(pathname);
@@ -96,8 +109,8 @@ export function stripLocale(pathname: string): string {
  * Translation helper. Returns the localized string for the given key,
  * falling back to the default locale, then to the key itself.
  *
- *   const t = useTranslations('fr');
- *   t('nav.home') // 'Accueil'
+ *   const t = useTranslations('ar');
+ *   t('nav.home') // 'الرئيسية'
  */
 // eslint-disable-next-line no-unused-vars
 export function useTranslations(locale: Locale): (key: UIKey) => string {
@@ -118,7 +131,7 @@ export function formatDate(
   const d = typeof date === 'string' ? new Date(date) : date;
   if (Number.isNaN(d.getTime())) return '';
   if (SITE.isoDates) return d.toISOString().slice(0, 10);
-  const lang = locale === 'fr' ? 'fr-FR' : 'en-US';
+  const lang = INTL_LANG[locale] ?? INTL_LANG[DEFAULT_LOCALE];
   return new Intl.DateTimeFormat(lang, options).format(d);
 }
 
@@ -133,7 +146,7 @@ export function isoDate(date: Date | string): string {
  * <link rel="alternate" hreflang="..."> SEO tags.
  *
  * `pathWithoutLocale` should be the canonical path WITHOUT locale prefix
- * (e.g. '/posts/welcome' for both EN and FR). Pass `availableLocales` to
+ * (e.g. '/posts/welcome' for both EN and AR). Pass `availableLocales` to
  * limit the output to a subset (e.g. when a post has no translation
  * sibling in another locale).
  */
@@ -168,8 +181,8 @@ export function canonicalUrl(pathname: string): string {
 /** Pretty label for the language switcher. */
 export function localeLabel(locale: Locale): string {
   switch (locale) {
-    case 'fr':
-      return 'Français';
+    case 'ar':
+      return 'العربية';
     case 'en':
     default:
       return 'English';
@@ -179,10 +192,18 @@ export function localeLabel(locale: Locale): string {
 /** ISO BCP 47 language tag for `<html lang>` and date formatters. */
 export function htmlLang(locale: Locale): string {
   switch (locale) {
-    case 'fr':
-      return 'fr-FR';
+    case 'ar':
+      return 'ar';
     case 'en':
     default:
       return 'en-US';
   }
+}
+
+/**
+ * Document text direction for `<html dir>`. Returns 'rtl' for
+ * right-to-left locales, 'ltr' otherwise.
+ */
+export function htmlDir(locale: Locale): 'rtl' | 'ltr' {
+  return RTL_LOCALES.includes(locale) ? 'rtl' : 'ltr';
 }

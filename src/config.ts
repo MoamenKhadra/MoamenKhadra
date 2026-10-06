@@ -1,6 +1,7 @@
 import process from 'node:process';
-import avatarImg from './assets/images/site/avatar.svg';
+import avatarImg from './assets/images/site/moamen_khadra.jpeg';
 import ogDefaultImg from './assets/images/site/og-default.svg';
+import type { UIKey } from './i18n/ui';
 import type { GiscusConfig, NavItem, SiteConfig, SocialLink } from './types/config';
 
 /**
@@ -15,7 +16,7 @@ export const SITE_IMAGES = {
   ogDefault: ogDefaultImg,
 } as const;
 
-export const locales = ['en', 'fr'] as const;
+export const locales = ['en', 'ar'] as const;
 export type Locale = (typeof locales)[number];
 
 /**
@@ -31,6 +32,24 @@ const GITHUB_REPO = import.meta.env.PUBLIC_GITHUB_REPO ?? 'chirping-astro';
 const TWITTER_HANDLE = import.meta.env.PUBLIC_TWITTER_HANDLE ?? '';
 const CONTACT_EMAIL = import.meta.env.PUBLIC_CONTACT_EMAIL ?? '';
 const THEME_REPO_URL = 'https://github.com/kannansuresh/chirping-astro';
+
+/**
+ * Public contact coordinates of the author. Hard-coded (not env-driven) so
+ * a build without `.env` still ships working contact links — these are
+ * published on the resume and social profiles anyway.
+ */
+export const CONTACT = {
+  /** Preferred contact channel (WhatsApp Business). */
+  whatsapp: 'https://wa.me/201069213448',
+  email: 'moamen.khadra@outlook.com',
+  linkedin: 'https://www.linkedin.com/in/moamen-khadra',
+  github: 'https://github.com/MomenGit',
+  instagram: 'https://www.instagram.com/_momentadev/',
+  x: 'https://x.com/momentadev',
+  youtube: 'https://youtube.com/@momentadev',
+  /** Short location shown on the resume header and home hero. */
+  location: 'Alexandria, Egypt',
+} as const;
 
 /**
  * Public GitHub coordinates of the deployed source. Useful for custom links
@@ -50,16 +69,16 @@ export const SITE: SiteConfig = {
   // ==========================================
 
   /** Default site title used as homepage <title> and meta. */
-  title: 'Chirping Astro',
+  title: 'Momentadev',
   /** Site tagline / description. */
   description:
-    'A modern, multilingual Astro v7 theme inspired by Chirpy — built with Tailwind v4, daisyUI, MDX, Pagefind, and Giscus.',
+    'Portfolio of Moamen Khadra, a software engineer building scalable APIs and data-driven web apps with Python, TypeScript, .NET, and Angular.',
   /** Author/handle shown in footer + meta. */
   author: {
-    name: 'Chirping Astro',
-    url: GITHUB_HANDLE ? `https://github.com/${GITHUB_HANDLE}` : undefined,
+    name: 'Moamen Khadra',
+    url: GITHUB_HANDLE ? `https://github.com/${GITHUB_HANDLE}` : CONTACT.github,
     avatar: avatarImg,
-    bio: 'A text-focused Astro v7 theme.',
+    bio: 'Software Engineer',
   },
   /** Default OG image. */
   defaultOgImage: ogDefaultImg.src,
@@ -106,7 +125,7 @@ export const SITE: SiteConfig = {
   /** Public URL of the deployed site, no trailing slash. Breaks SEO/RSS if incorrect. */
   // `||` (not `??`) so an explicitly empty `SITE_URL=` in `.env` also
   // falls back to the default. Astro requires `site` to be a valid URL.
-  url: process.env.SITE_URL || 'https://chirping-astro.example.com',
+  url: process.env.SITE_URL || 'https://momengit.github.io',
   /** Supported locales. Changing this requires adding/removing locale folders, content, and i18n entries. */
   locales: locales,
   /** Default locale. Changing this is a breaking, atomic, multi-file operation. */
@@ -117,35 +136,67 @@ export const SITE: SiteConfig = {
 
 export const NAV: readonly NavItem[] = [
   { key: 'home', href: '/', icon: 'lucide:home' },
-  { key: 'categories', href: '/categories', icon: 'lucide:layers' },
-  { key: 'tags', href: '/tags', icon: 'lucide:tag' },
-  { key: 'archives', href: '/archives', icon: 'lucide:archive' },
+  { key: 'projects', href: '/projects', icon: 'lucide:briefcase' },
+  { key: 'resume', href: '/resume', icon: 'lucide:file-text' },
   { key: 'about', href: '/about', icon: 'lucide:info' },
+  { key: 'blog', href: '/blog', icon: 'lucide:newspaper' },
 ] as const;
 
 /**
- * SOCIALS is built from the env-driven handles above so users only edit
- * one place (`.env` or the constants at the top of this file). Empty
- * handles are filtered out automatically — the icon simply won't appear
- * in the sidebar. RSS is always present.
+ * Hero marketing stats shown on the home page. `labelKey` points at an
+ * i18n entry so numbers stay literal while labels translate.
+ */
+export const HERO_STATS: readonly { value: string; labelKey: UIKey }[] = [
+  { value: '5+', labelKey: 'home.statsProjects' },
+  { value: '3+', labelKey: 'home.statsYears' },
+  { value: '20+', labelKey: 'home.statsTech' },
+] as const;
+
+/** Core-stack chips rendered under the home hero. */
+export const HERO_SKILLS: readonly string[] = [
+  'Python',
+  'TypeScript',
+  'C#',
+  '.NET',
+  'Angular',
+  'Node.js',
+  'Flask',
+  'Docker',
+  'PostgreSQL',
+  'Linux',
+] as const;
+
+/**
+ * Contact + social links. The GitHub / X / email handles can still
+ * be overridden via `.env`; WhatsApp, LinkedIn, GitHub, Instagram, X and
+ * YouTube fall back to the `CONTACT` constants above so the sidebar never
+ * ships broken links. RSS is always present.
  *
  * Need a social network the theme doesn't ship with? Just append a
  * literal entry below — the type is `SocialLink`.
  */
 export const SOCIALS: readonly SocialLink[] = [
-  GITHUB_HANDLE && {
+  {
     label: 'GitHub',
-    href: `https://github.com/${GITHUB_HANDLE}`,
+    href: GITHUB_HANDLE ? `https://github.com/${GITHUB_HANDLE}` : CONTACT.github,
     icon: 'simple-icons:github',
   },
-  TWITTER_HANDLE && {
-    label: 'Twitter',
-    href: `https://x.com/${TWITTER_HANDLE}`,
+  { label: 'LinkedIn', href: CONTACT.linkedin, icon: 'simple-icons:linkedin' },
+  { label: 'Instagram', href: CONTACT.instagram, icon: 'simple-icons:instagram' },
+  {
+    label: 'X',
+    href: TWITTER_HANDLE ? `https://x.com/${TWITTER_HANDLE}` : CONTACT.x,
     icon: 'simple-icons:x',
   },
-  CONTACT_EMAIL && {
+  { label: 'YouTube', href: CONTACT.youtube, icon: 'simple-icons:youtube' },
+  {
+    label: 'WhatsApp',
+    href: CONTACT.whatsapp,
+    icon: 'simple-icons:whatsapp',
+  },
+  {
     label: 'Email',
-    href: `mailto:${CONTACT_EMAIL}`,
+    href: `mailto:${CONTACT_EMAIL || CONTACT.email}`,
     icon: 'lucide:mail',
   },
   { label: 'RSS', href: '/rss.xml', icon: 'lucide:rss' },

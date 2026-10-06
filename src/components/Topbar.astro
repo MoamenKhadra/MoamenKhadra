@@ -8,6 +8,7 @@ import { useTranslations, localizedPath } from '../i18n/utils';
 import { Icon } from 'astro-icon/components';
 import SearchButton from './islands/SearchButton.astro';
 import LanguageSwitcher from './islands/LanguageSwitcher.astro';
+import ThemeToggle from './islands/ThemeToggle.astro';
 
 interface Props {
   locale: Locale;
@@ -64,7 +65,7 @@ const home = localizedPath('/', locale);
     </nav>
 
     {/* Mobile site title */}
-    <a href={home} class="ml-1 truncate text-base font-semibold sm:hidden" aria-label={SITE.title}>
+    <a href={home} class="font-display ms-1 truncate text-base font-semibold sm:hidden" aria-label={SITE.title}>
       {SITE.title}
     </a>
   </div>
@@ -72,5 +73,6 @@ const home = localizedPath('/', locale);
   <div class="chirpy-topbar__search">
     <SearchButton locale={locale} />
     {SITE.multilingual && <LanguageSwitcher locale={locale} availableLocales={availableLocales} />}
+    <ThemeToggle locale={locale} />
   </div>
 </header>

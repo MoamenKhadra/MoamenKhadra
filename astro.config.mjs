@@ -157,7 +157,7 @@ export default defineConfig({
     ],
   },
 
-  // i18n config: EN is default and serves at root (no prefix), FR served at /fr.
+    // i18n config: EN is default and serves at root (no prefix), AR served at /ar.
   // We rely on filesystem routing (src/pages and src/pages/[...locale]) for the actual
   // routes, but still expose locales here so integrations like sitemap can
   // generate hreflang alternates correctly.
@@ -329,6 +329,123 @@ export default defineConfig({
             style: 'normal',
             src: ['./node_modules/@fontsource/lato/files/lato-latin-400-normal.woff2'],
           },
+        ],
+      },
+    },
+    // Alexandria — Arabic display face from @fontsource/alexandria. Only the
+    // arabic subset is registered; the html[lang^='ar'] override in
+    // global.css puts Alexandria first in the display stack, with
+    // --font-alexandria-latin as the second tier for Latin text in AR pages.
+    // `fallbacks: []` disables Astro's metric fallbacks: they would be
+    // computed from the arabic subset and their Latin face (Arial sized by
+    // Arabic metrics) would intercept English words at an inflated scale.
+    {
+      name: 'Alexandria',
+      cssVariable: '--font-alexandria',
+      provider: fontProviders.local(),
+      fallbacks: [],
+      options: {
+        variants: [
+          {
+            weight: '400',
+            style: 'normal',
+            src: ['./node_modules/@fontsource/alexandria/files/alexandria-arabic-400-normal.woff2'],
+          },
+          {
+            weight: '600',
+            style: 'normal',
+            src: ['./node_modules/@fontsource/alexandria/files/alexandria-arabic-600-normal.woff2'],
+          },
+          {
+            weight: '700',
+            style: 'normal',
+            src: ['./node_modules/@fontsource/alexandria/files/alexandria-arabic-700-normal.woff2'],
+          },
+          {
+            weight: '900',
+            style: 'normal',
+            src: ['./node_modules/@fontsource/alexandria/files/alexandria-arabic-900-normal.woff2'],
+          },
+        ],
+      },
+    },
+    // Alexandria (latin subset) — English glyphs inside AR pages, so Latin
+    // text renders in Alexandria's own design at 1:1 scale instead of the
+    // Arabic-subset metric fallback. Default fallbacks give metric faces
+    // derived from Alexandria's *Latin* metrics (sane size-adjust, used only
+    // while the font loads).
+    {
+      name: 'Alexandria',
+      cssVariable: '--font-alexandria-latin',
+      provider: fontProviders.local(),
+      options: {
+        variants: [
+          { weight: '400', style: 'normal', src: ['./node_modules/@fontsource/alexandria/files/alexandria-latin-400-normal.woff2'] },
+          { weight: '600', style: 'normal', src: ['./node_modules/@fontsource/alexandria/files/alexandria-latin-600-normal.woff2'] },
+          { weight: '700', style: 'normal', src: ['./node_modules/@fontsource/alexandria/files/alexandria-latin-700-normal.woff2'] },
+          { weight: '900', style: 'normal', src: ['./node_modules/@fontsource/alexandria/files/alexandria-latin-900-normal.woff2'] },
+        ],
+      },
+    },
+    // Source Serif 4 — English display face (headings, nav, buttons, badges).
+    // Latin subset; `fallbacks: ['serif']` makes Astro emit serif metric
+    // fallbacks and end the CSS variable with the serif generic. Weights
+    // 800/900 exist because titles use font-extrabold/font-black.
+    {
+      name: 'Source Serif 4',
+      cssVariable: '--font-source-serif-4',
+      provider: fontProviders.local(),
+      fallbacks: ['serif'],
+      options: {
+        variants: [
+          { weight: '400', style: 'normal', src: ['./node_modules/@fontsource/source-serif-4/files/source-serif-4-latin-400-normal.woff2'] },
+          { weight: '500', style: 'normal', src: ['./node_modules/@fontsource/source-serif-4/files/source-serif-4-latin-500-normal.woff2'] },
+          { weight: '600', style: 'normal', src: ['./node_modules/@fontsource/source-serif-4/files/source-serif-4-latin-600-normal.woff2'] },
+          { weight: '700', style: 'normal', src: ['./node_modules/@fontsource/source-serif-4/files/source-serif-4-latin-700-normal.woff2'] },
+          { weight: '800', style: 'normal', src: ['./node_modules/@fontsource/source-serif-4/files/source-serif-4-latin-800-normal.woff2'] },
+          { weight: '900', style: 'normal', src: ['./node_modules/@fontsource/source-serif-4/files/source-serif-4-latin-900-normal.woff2'] },
+          { weight: '400', style: 'italic', src: ['./node_modules/@fontsource/source-serif-4/files/source-serif-4-latin-400-italic.woff2'] },
+          { weight: '600', style: 'italic', src: ['./node_modules/@fontsource/source-serif-4/files/source-serif-4-latin-600-italic.woff2'] },
+          { weight: '700', style: 'italic', src: ['./node_modules/@fontsource/source-serif-4/files/source-serif-4-latin-700-italic.woff2'] },
+        ],
+      },
+    },
+    // Noto Naskh Arabic — Arabic body face (paragraphs, metadata, lists).
+    // Arabic subset only; Latin in AR text comes from the dedicated
+    // --font-noto-naskh-arabic-latin tier (see below). `fallbacks: []`
+    // disables Astro's metric fallbacks — computed from the arabic subset
+    // they sized Latin at 143% of normal, which is what made English words
+    // in AR look oversized. No italic — Arabic emphasis is handled upright
+    // in global.css.
+    {
+      name: 'Noto Naskh Arabic',
+      cssVariable: '--font-noto-naskh-arabic',
+      provider: fontProviders.local(),
+      fallbacks: [],
+      options: {
+        variants: [
+          { weight: '400', style: 'normal', src: ['./node_modules/@fontsource/noto-naskh-arabic/files/noto-naskh-arabic-arabic-400-normal.woff2'] },
+          { weight: '500', style: 'normal', src: ['./node_modules/@fontsource/noto-naskh-arabic/files/noto-naskh-arabic-arabic-500-normal.woff2'] },
+          { weight: '600', style: 'normal', src: ['./node_modules/@fontsource/noto-naskh-arabic/files/noto-naskh-arabic-arabic-600-normal.woff2'] },
+          { weight: '700', style: 'normal', src: ['./node_modules/@fontsource/noto-naskh-arabic/files/noto-naskh-arabic-arabic-700-normal.woff2'] },
+        ],
+      },
+    },
+    // Noto Naskh Arabic (latin subset) — English words/digits in AR pages,
+    // rendered in Noto's own Latin at 1:1 so they match the Arabic beside
+    // them. `fallbacks: ['serif']` gives metric fallbacks derived from the
+    // latin files (sane scale) and ends the CSS variable with a generic.
+    {
+      name: 'Noto Naskh Arabic',
+      cssVariable: '--font-noto-naskh-arabic-latin',
+      provider: fontProviders.local(),
+      fallbacks: ['serif'],
+      options: {
+        variants: [
+          { weight: '400', style: 'normal', src: ['./node_modules/@fontsource/noto-naskh-arabic/files/noto-naskh-arabic-latin-400-normal.woff2'] },
+          { weight: '500', style: 'normal', src: ['./node_modules/@fontsource/noto-naskh-arabic/files/noto-naskh-arabic-latin-500-normal.woff2'] },
+          { weight: '600', style: 'normal', src: ['./node_modules/@fontsource/noto-naskh-arabic/files/noto-naskh-arabic-latin-600-normal.woff2'] },
+          { weight: '700', style: 'normal', src: ['./node_modules/@fontsource/noto-naskh-arabic/files/noto-naskh-arabic-latin-700-normal.woff2'] },
         ],
       },
     },

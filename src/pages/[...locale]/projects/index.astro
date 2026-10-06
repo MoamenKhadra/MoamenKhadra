@@ -1,0 +1,43 @@
+---
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import ProjectCard from '~/components/ProjectCard.astro';
+import { SITE } from '~/config';
+import { useTranslations } from '~/i18n/utils';
+import { getProjects } from '~/utils/projects';
+
+export function getStaticPaths() {
+  return SITE.locales.map((l) => ({
+    params: { locale: l === SITE.defaultLocale ? undefined : l },
+    props: { locale: l },
+  }));
+}
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+
+const projects = await getProjects(locale);
+---
+
+<BaseLayout
+  title={t('nav.projects')}
+  description={SITE.description}
+  pathWithoutLocale="/projects/"
+  crumbs={[{ label: t('nav.projects') }]}
+>
+  <header class="mb-6">
+    <h1 class="text-3xl font-bold tracking-tight">{t('nav.projects')}</h1>
+  </header>
+
+  {
+    projects.length === 0 ? (
+      <p class="border-base-300 text-base-content/70 rounded-md border border-dashed px-6 py-10 text-center">
+        {t('projects.empty')}
+      </p>
+    ) : (
+      <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+        {projects.map((project, index) => (
+          <ProjectCard project={project} locale={locale} prioritizeLcp={index === 0} />
+        ))}
+      </div>
+    )
+  }
+</BaseLayout>

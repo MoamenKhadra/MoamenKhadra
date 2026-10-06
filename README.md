@@ -93,7 +93,7 @@ Edit the bilingual privacy policy templates:
 
 ```text
 src/content/pages/en/privacy.md
-src/content/pages/fr/privacy.md
+src/content/pages/ar/privacy.md
 ```
 
 Replace placeholder values in `[BRACKETS]` (site name, contact email, etc.).
@@ -149,11 +149,10 @@ To enable GitHub Discussions-powered comments on posts:
 
 ## Single Language Mode
 
-This starter ships with English + French (i18n). To run a single-language site:
+This starter ships with English + Arabic (i18n, RTL). To run a single-language site:
 
 1. Open `src/config.ts` and set `multilingual: false`.
-2. Delete the `src/content/posts/fr/` folder (and `src/content/pages/fr/` if present).
-3. Remove the `src/pages/fr/` directory.
+2. Delete the `src/content/posts/ar/` folder (and `src/content/pages/ar/` if present).
 
 The language switcher will disappear and all `hreflang` tags are omitted.
 

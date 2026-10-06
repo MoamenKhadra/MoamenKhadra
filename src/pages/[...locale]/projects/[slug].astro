@@ -1,0 +1,136 @@
+---
+import { render } from 'astro:content';
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import SmartImage from '~/components/SmartImage.astro';
+import { SITE, type Locale } from '~/config';
+import { useTranslations, localizedPath } from '~/i18n/utils';
+import {
+  getProjects,
+  getProjectTranslations,
+  projectSlug,
+  projectHeroImage,
+  type Project,
+} from '~/utils/projects';
+import { Icon } from 'astro-icon/components';
+
+interface Props {
+  project: Project;
+  locale: Locale;
+}
+
+export async function getStaticPaths() {
+  const paths = [];
+  for (const locale of SITE.locales) {
+    const projects = await getProjects(locale);
+    const localeParams = { locale: locale === SITE.defaultLocale ? undefined : locale };
+    for (const project of projects) {
+      paths.push({
+        params: { ...localeParams, slug: projectSlug(project) },
+        props: { project, locale },
+      });
+    }
+  }
+  return paths;
+}
+
+const { project, locale } = Astro.props as Props;
+const t = useTranslations(locale);
+const { Content } = await render(project);
+
+const translations = await getProjectTranslations(project);
+const availableLocales = (Object.keys(translations) as Locale[]).sort();
+
+const heroAsset = projectHeroImage(project);
+const heroAlt = project.data.heroImageAlt ?? '';
+const { repo, demo } = project.data.links;
+const hasLinks = Boolean(repo || demo);
+
+// OG image: hero if present (unwrap ImageMetadata -> public URL, same as
+// posts' heroImageSrc), otherwise the generated fallback.
+const heroRaw = project.data.heroImage;
+const heroSrc =
+  typeof heroRaw === 'string'
+    ? heroRaw
+    : typeof heroRaw === 'object' && heroRaw && 'src' in heroRaw
+      ? (heroRaw as { src: string }).src
+      : undefined;
+const ogSlug = projectSlug(project);
+const ogPrefix = locale === SITE.defaultLocale ? '' : `${locale}/`;
+const generatedOgPath = `/og/${ogPrefix}projects/${ogSlug}.png`;
+const skipAutoOg = !SITE.autoOgImage || import.meta.env.CI_SKIP_AUTO_OG_IMAGE === 'true';
+const ogImage = heroSrc ?? (skipAutoOg ? undefined : generatedOgPath);
+---
+
+<BaseLayout
+  title={`${project.data.title} (${t('nav.projects')})`}
+  description={project.data.description}
+  pathWithoutLocale={`/projects/${projectSlug(project)}/`}
+  ogImage={ogImage}
+  crumbs={[
+    { label: t('nav.projects'), href: localizedPath('/projects/', locale) },
+    { label: project.data.title },
+  ]}
+  availableLocales={availableLocales}
+>
+  <article class="px-1 py-6 sm:px-2 sm:py-8">
+    <header class="mb-6">
+      <h1 class="text-3xl leading-tight font-extrabold tracking-tight sm:text-4xl">
+        {project.data.title}
+      </h1>
+      <p class="text-base-content/70 mt-3 text-lg">{project.data.description}</p>
+
+      {
+        hasLinks && (
+          <div class="mt-4 flex flex-wrap gap-2">
+            {repo && (
+              <a href={repo} class="btn btn-sm" target="_blank" rel="noopener noreferrer">
+                <Icon name="lucide:github" width={14} height={14} />
+                {t('projects.repo')}
+              </a>
+            )}
+            {demo && (
+              <a href={demo} class="btn btn-sm btn-outline" target="_blank" rel="noopener noreferrer">
+                <Icon name="lucide:external-link" width={14} height={14} />
+                {t('projects.demo')}
+              </a>
+            )}
+          </div>
+        )
+      }
+
+      {
+        project.data.tech.length > 0 && (
+          <div class="mt-4 flex flex-wrap items-center gap-1.5">
+            <span class="text-base-content/60 me-1 text-xs font-semibold tracking-wide uppercase">
+              {t('projects.tech')}
+            </span>
+            {project.data.tech.map((item) => (
+              <span class="badge badge-outline badge-sm">{item}</span>
+            ))}
+          </div>
+        )
+      }
+    </header>
+
+    {
+      heroAsset && (
+        <div class="border-base-300 mb-8 overflow-hidden rounded-md border">
+          <SmartImage
+            src={heroAsset}
+            alt={heroAlt}
+            class="h-auto w-full"
+            loading="eager"
+            fetchpriority="high"
+            widths={[640, 960, 1280]}
+            sizes="(max-width: 767px) 100vw, 768px"
+            quality={80}
+          />
+        </div>
+      )
+    }
+
+    <div class="prose-chirpy max-w-none">
+      <Content />
+    </div>
+  </article>
+</BaseLayout>

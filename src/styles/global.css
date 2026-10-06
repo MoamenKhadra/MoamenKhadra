@@ -39,9 +39,17 @@
   /* Reading column max width on post pages */
   --width-prose: 50rem;
 
-  /* Fonts — configured via Astro Fonts API (astro.config.mjs) */
-  --font-sans: var(--font-source-sans-3, system-ui, sans-serif);
+  /* Fonts — configured via Astro Fonts API (astro.config.mjs).
+     `display` styles headings/nav/buttons/badges; `body` styles paragraphs,
+     metadata and lists. Both are swapped per language by the html[lang^='ar']
+     override below. */
+  --font-display: var(--font-source-serif-4), ui-serif, Georgia, serif;
+  --font-body: var(--font-source-sans-3), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-body);
   --font-mono: var(--font-jetbrains-mono, ui-monospace, monospace);
+
+  /* Lightning background artwork opacity (body::before in @layer base). */
+  --lightning-opacity: 0.2;
 }
 
 [data-theme='black'] {
@@ -49,6 +57,39 @@
   --color-sidebar-to: oklch(12% 0 0);
   --color-sidebar-text: oklch(75% 0 0);
   --color-sidebar-muted: oklch(55% 0 0);
+}
+
+/* ---------- Language (Arabic) typography ---------- */
+/* Unlayered so these beat both the `@layer theme` :root tokens and the
+   utilities layer (needed for the .italic override further down).
+   Two-tier stacks: the arabic-subset family resolves Arabic first (pure
+   Arabic text never downloads the latin files); Latin words/digits walk
+   past it — those families contain no Latin glyphs — to the dedicated
+   `-latin` tier, so English renders in Alexandria's/Noto's own Latin at
+   1:1 instead of an Arabic-metric-sized fallback. */
+html[lang^='ar'],
+html[dir='rtl'] {
+  --font-display:
+    var(--font-alexandria), var(--font-alexandria-latin), ui-sans-serif, system-ui, sans-serif;
+  --font-body:
+    var(--font-noto-naskh-arabic), var(--font-noto-naskh-arabic-latin), ui-serif, Georgia, serif;
+}
+
+/* Arabic has no true italics — slanted Naskh reads as a rendering error.
+   Emphasis is set upright, and promoted to weight 600 inside body text
+   (headings/buttons keep their inherited weight instead). */
+html[lang^='ar'] :is(em, i, cite, .italic) {
+  font-style: normal;
+}
+html[lang^='ar'] :where(p, li, dd, dt, td, blockquote, figcaption) :is(em, i, cite) {
+  font-weight: 600;
+}
+
+/* Lightning background — mirror the artwork horizontally in RTL so the
+   diagonal bands flow with reading direction (like the typography rules
+   above, kept unlayered; composes with the theme swap in @layer base). */
+html[dir='rtl'] body::before {
+  transform: scaleX(-1);
 }
 
 /* ---------- Base layer ---------- */
@@ -61,9 +102,60 @@
 
   body {
     @apply bg-base-200 text-base-content min-h-screen antialiased;
-    font-family: var(--font-sans);
+    font-family: var(--font-body);
     font-size: 1rem;
     line-height: 1.65;
+  }
+
+  /* Lightning artwork — full-viewport backdrop behind all content.
+     Light variant is the default (data-theme="lofi"); the [data-theme='black']
+     override below swaps in the dark artwork. Kept at low opacity so opaque
+     surfaces (sidebar, cards) and text stay readable — the art shows through
+     the page-background gaps and the translucent topbar.
+     z-index 0 (not -1): daisyUI gives <html> an opaque background, so body's
+     bg-base-200 is NOT propagated to the canvas — it paints on body itself
+     and would cover a negative-z layer. z-0 puts the art above body's
+     background but below positive-z chrome (topbar z-30, sidebar z-40);
+     .chirpy-main-wrapper is positioned so its content paints above the art. */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image: url('../assets/images/site/lightning-background-light.svg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: var(--lightning-opacity);
+  }
+
+  [data-theme='black'] body::before {
+    background-image: url('../assets/images/site/lightning-background-dark.svg');
+  }
+
+  /* Display typography — headings, navigation, buttons and labels use the
+     display face for their language. Selectors are intentionally NOT wrapped
+     in :where(): preflight resets form elements with `font: inherit` at
+     specificity (0,0,1), so equal specificity + later source order wins here,
+     while the utilities layer (.font-body) can still override all of it.
+     code/kbd/samp/pre keep the mono preflight (higher specificity, untouched). */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  nav,
+  button,
+  .btn,
+  .badge,
+  dt,
+  summary,
+  th,
+  legend,
+  .chirpy-card-title {
+    font-family: var(--font-display);
   }
 
   :focus-visible {
@@ -125,7 +217,7 @@
   }
   .heading-anchor:hover::after {
     content: '#';
-    @apply text-base-content/30 ml-2;
+    @apply text-base-content/30 ms-2;
   }
 
   /* Custom scrollbar (Webkit) — Chirpy-like thin grey thumb */
@@ -144,9 +236,10 @@
 
 /* ---------- Layout chrome ---------- */
 @layer components {
-  /* Left sidebar — always pinned to the extreme left of the viewport. */
+  /* Sidebar — pinned to the inline start of the viewport (left in LTR,
+     right in RTL). */
   .chirpy-sidebar {
-    @apply border-base-300 fixed inset-y-0 left-0 z-40 flex flex-col items-center border-r px-4 py-6;
+    @apply border-base-300 fixed inset-y-0 start-0 z-40 flex flex-col items-center border-e px-4 py-6;
     width: var(--width-sidebar);
     background: linear-gradient(180deg, var(--color-sidebar-from) 0%, var(--color-sidebar-to) 100%);
     color: var(--color-sidebar-text);
@@ -156,7 +249,11 @@
     .chirpy-sidebar {
       transform: translateX(-100%);
     }
-    .chirpy-sidebar.is-open {
+    [dir='rtl'] .chirpy-sidebar {
+      transform: translateX(100%);
+    }
+    .chirpy-sidebar.is-open,
+    [dir='rtl'] .chirpy-sidebar.is-open {
       transform: translateX(0);
     }
   }
@@ -167,26 +264,24 @@
   }
 
   .chirpy-main-wrapper {
-    @apply flex min-h-screen w-full flex-col px-4 sm:px-6;
+    @apply relative flex min-h-screen w-full flex-col px-4 sm:px-6;
   }
   @media (min-width: 1024px) {
     .chirpy-main-wrapper {
-      margin-left: var(--width-sidebar);
+      margin-inline-start: var(--width-sidebar);
       width: calc(100% - var(--width-sidebar));
       max-width: calc(100% - var(--width-sidebar));
-      padding-left: 3rem;
-      padding-right: 3rem;
+      padding-inline: 3rem;
     }
   }
   @media (min-width: 1280px) {
     .chirpy-main-wrapper {
-      padding-left: 3.5rem;
-      padding-right: 3.5rem;
+      padding-inline: 3.5rem;
     }
   }
   @media (min-width: 1650px) {
     .chirpy-main-wrapper {
-      margin-left: var(--width-sidebar-lg);
+      margin-inline-start: var(--width-sidebar-lg);
       width: calc(100% - var(--width-sidebar-lg));
       max-width: calc(100% - var(--width-sidebar-lg));
     }
@@ -238,7 +333,7 @@
   @media (min-width: 1280px) {
     .chirpy-topbar__search {
       width: calc(var(--width-panel) + 2.5rem); /* rail width + gap-10 */
-      padding-left: 2.5rem; /* mirror gap-10 between main and rail */
+      padding-inline-start: 2.5rem; /* mirror gap-10 between main and rail */
     }
   }
   @media (min-width: 1440px) {
@@ -262,24 +357,25 @@
     @apply block text-sm;
   }
 
-  /* Subtle left rail for aside items (Recently Updated, TOC, etc.).
-     Each item gets a faint left border that turns primary on hover/active. */
+  /* Subtle inline-start rail for aside items (Recently Updated, TOC, etc.).
+     Each item gets a faint inline-start border that turns primary on
+     hover/active. */
   .chirpy-aside-list {
     @apply flex flex-col;
-    border-left: 1px solid color-mix(in oklab, var(--color-base-content) 10%, transparent);
+    border-inline-start: 1px solid color-mix(in oklab, var(--color-base-content) 10%, transparent);
   }
   .chirpy-aside-item {
-    @apply text-base-content/75 block py-1.5 pr-2 pl-3 text-sm transition;
-    margin-left: -1px;
-    border-left: 1px solid transparent;
+    @apply text-base-content/75 block py-1.5 ps-3 pe-2 text-sm transition;
+    margin-inline-start: -1px;
+    border-inline-start: 1px solid transparent;
   }
   .chirpy-aside-item:hover {
     @apply text-primary;
-    border-left-color: var(--color-primary);
+    border-inline-start-color: var(--color-primary);
   }
   .chirpy-aside-item[data-active='true'] {
     @apply text-primary font-semibold;
-    border-left-color: var(--color-primary);
+    border-inline-start-color: var(--color-primary);
   }
 
   /* Post card — horizontal Chirpy card */
@@ -336,7 +432,61 @@
     @apply order-first overflow-hidden md:order-last md:col-span-5 md:flex md:flex-col;
   }
   .chirpy-card-image {
-    @apply h-44 w-full object-cover md:min-h-0 md:flex-1 md:rounded-r-md;
+    @apply h-44 w-full object-cover md:min-h-0 md:flex-1 md:rounded-e-md;
+  }
+
+  /* Project cards stay vertical at every breakpoint: image on top, body
+     below (blog post cards keep the horizontal Chirpy layout). The
+     --vertical prefix out-specifies the shared md: grid/flex utilities. */
+  .chirpy-card--vertical .chirpy-card-link,
+  .chirpy-card--vertical .chirpy-card-link.has-image {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .chirpy-card--vertical .chirpy-card-image-wrap {
+    order: 0;
+    display: block;
+    grid-column: auto;
+  }
+  .chirpy-card--vertical .chirpy-card-image {
+    flex: none;
+    border-start-end-radius: 0;
+    border-end-end-radius: 0;
+  }
+  .chirpy-card--vertical .chirpy-card-body {
+    grid-column: auto;
+  }
+  @media (min-width: 768px) {
+    .chirpy-card--vertical .chirpy-card-image {
+      height: 16rem;
+    }
+  }
+
+  /* Clickable repo/demo links: the card's primary (title) link stretches
+     an overlay across the whole card so image/description/badges still
+     navigate to the project; the action links sit above that overlay. */
+  .chirpy-card--vertical {
+    position: relative;
+  }
+  .chirpy-card--vertical .chirpy-card-stretch::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+  .chirpy-card--vertical .chirpy-card-actions a {
+    position: relative;
+    z-index: 1;
+  }
+  .chirpy-card--vertical .chirpy-card-actions a:hover {
+    color: var(--color-primary);
+  }
+  /* Keyboard focus ring follows the whole card, not just the title text. */
+  .chirpy-card--vertical .chirpy-card-stretch:focus-visible {
+    outline: none;
+  }
+  .chirpy-card--vertical .chirpy-card-stretch:focus-visible::after {
+    outline: 2px solid var(--color-primary);
+    outline-offset: -2px;
   }
 }
 
@@ -376,13 +526,13 @@
     @apply text-inherit no-underline;
   }
   .prose-chirpy ul {
-    @apply my-4 list-disc pl-6;
+    @apply my-4 list-disc ps-6;
   }
   .prose-chirpy ol {
-    @apply my-4 list-decimal pl-6;
+    @apply my-4 list-decimal ps-6;
   }
   .prose-chirpy blockquote {
-    @apply border-primary/50 bg-base-200 text-base-content/80 my-6 rounded-r-sm border-l-4 px-4 py-2 italic;
+    @apply border-primary/50 bg-base-200 text-base-content/80 my-6 rounded-e-sm border-s-4 px-4 py-2 italic;
   }
   .prose-chirpy hr {
     @apply border-base-300 my-10;
@@ -449,7 +599,7 @@
     object-fit: cover;
   }
   .prose-chirpy table {
-    @apply my-6 w-full border-collapse text-left text-sm;
+    @apply my-6 w-full border-collapse text-start text-sm;
   }
   .prose-chirpy table th,
   .prose-chirpy table td {
@@ -461,7 +611,7 @@
 
   /* Callouts (.callout.callout-info / -success / -warning / -error) */
   .callout {
-    @apply my-6 rounded-md border-l-4 px-4 py-3;
+    @apply my-6 rounded-md border-s-4 px-4 py-3;
   }
   .callout-info {
     @apply border-info bg-info/10;
@@ -506,26 +656,26 @@
 /* ---------- TOC sticky highlight (uses chirpy-aside rail) ---------- */
 @layer components {
   .toc ol {
-    border-left: 1px solid color-mix(in oklab, var(--color-base-content) 10%, transparent);
+    border-inline-start: 1px solid color-mix(in oklab, var(--color-base-content) 10%, transparent);
   }
   .toc a {
-    @apply text-base-content/70 block py-1 pr-2 pl-3 text-sm transition-colors;
-    margin-left: -1px;
-    border-left: 1px solid transparent;
+    @apply text-base-content/70 block py-1 ps-3 pe-2 text-sm transition-colors;
+    margin-inline-start: -1px;
+    border-inline-start: 1px solid transparent;
   }
   .toc a:hover {
     @apply text-primary;
-    border-left-color: var(--color-primary);
+    border-inline-start-color: var(--color-primary);
   }
   .toc a[data-active='true'] {
     @apply text-primary font-semibold;
-    border-left-color: var(--color-primary);
+    border-inline-start-color: var(--color-primary);
   }
   .toc .toc-level-3 a {
-    @apply pl-6;
+    @apply ps-6;
   }
   .toc .toc-level-4 a {
-    @apply pl-9;
+    @apply ps-9;
   }
 
   /* Smart TOC: H3/H4 entries are hidden until their parent H2 is the
@@ -601,13 +751,13 @@
 /* ---------- Header search pill ---------- */
 @layer components {
   .search-pill {
-    @apply border-base-300 bg-base-100 text-base-content/70 hover:text-base-content hover:border-base-content/30 inline-flex h-9 items-center gap-2 rounded-full border pr-1.5 pl-3 text-sm transition;
+    @apply border-base-300 bg-base-100 text-base-content/70 hover:text-base-content hover:border-base-content/30 inline-flex h-9 min-w-0 items-center gap-2 rounded-full border ps-3 pe-1.5 text-sm transition;
   }
   .search-pill__icon {
     @apply shrink-0;
   }
   .search-pill__label {
-    @apply flex-1 truncate text-left;
+    @apply flex-1 truncate text-start;
   }
   .search-pill__kbd {
     @apply border-base-300 bg-base-200 text-base-content/70 inline-flex h-6 min-w-6 items-center justify-center rounded-md border px-1.5 font-mono text-xs;
@@ -629,7 +779,7 @@
 /* ---------- Back-to-top floating button ---------- */
 @layer components {
   .back-to-top {
-    @apply border-base-300 bg-base-100 text-base-content fixed right-6 bottom-6 z-30 flex h-11 w-11 items-center justify-center rounded-full border shadow-md transition;
+    @apply border-base-300 bg-base-100 text-base-content fixed end-6 bottom-6 z-30 flex h-11 w-11 items-center justify-center rounded-full border shadow-md transition;
     opacity: 0;
     pointer-events: none;
   }

@@ -12,7 +12,7 @@ import satori from 'satori';
 import { Resvg } from '@resvg/resvg-js';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { SITE } from '../config';
+import { SITE, type Locale } from '../config';
 
 export interface OgImageData {
   title: string;
@@ -20,27 +20,82 @@ export interface OgImageData {
   date?: string;
   category?: string;
   tags?: string[];
+  locale?: Locale;
 }
 
 const WIDTH = 1200;
 const HEIGHT = 630;
 
-// Load font files from @fontsource/inter (bundled locally, no network needed).
-const fontsDir = join(process.cwd(), 'node_modules/@fontsource/inter/files');
-const fontRegular = readFileSync(join(fontsDir, 'inter-latin-400-normal.woff'));
-const fontBold = readFileSync(join(fontsDir, 'inter-latin-700-normal.woff'));
+// Load font files from @fontsource (bundled locally, no network needed).
+// Mirrors the site's typography: Source Sans 3 (body) and Source Serif 4 /
+// Alexandria (display per locale). Noto Naskh Arabic is NOT registered here —
+// satori's opentype.js fork cannot parse its Arabic GSUB tables
+// ("lookupType: 5 - substFormat: 3"), so Arabic text falls back to
+// Alexandria as it did before the typography switch.
+const sourceSansDir = join(process.cwd(), 'node_modules/@fontsource/source-sans-3/files');
+const bodyRegular = readFileSync(join(sourceSansDir, 'source-sans-3-latin-400-normal.woff'));
+const bodyBold = readFileSync(join(sourceSansDir, 'source-sans-3-latin-700-normal.woff'));
+const serifDir = join(process.cwd(), 'node_modules/@fontsource/source-serif-4/files');
+const serifRegular = readFileSync(join(serifDir, 'source-serif-4-latin-400-normal.woff'));
+const serifBold = readFileSync(join(serifDir, 'source-serif-4-latin-700-normal.woff'));
+const alexandriaDir = join(process.cwd(), 'node_modules/@fontsource/alexandria/files');
+const alexandriaRegular = readFileSync(join(alexandriaDir, 'alexandria-arabic-400-normal.woff'));
+const alexandriaBold = readFileSync(join(alexandriaDir, 'alexandria-arabic-700-normal.woff'));
+
+const RTL_LOCALES: ReadonlySet<string> = new Set(['ar']);
+
+/**
+ * Satori lays text out with an LTR paragraph direction: it reverses the
+ * characters of each Arabic run but keeps runs in logical order. For mixed
+ * strings (e.g. "3 مايو 2026") that yields a wrong visual order for RTL
+ * readers, so we pre-reverse the whitespace-token order — satori's per-run
+ * reversal then produces the correct RTL visual.
+ *
+ * Pure-Arabic strings must be passed through unchanged (satori already
+ * reverses them as a whole). The only exception is trailing punctuation
+ * (".", "…"), which satori keeps on the wrong side under LTR embedding —
+ * move it to the front so it lands last when read right-to-left.
+ */
+function toRtlVisual(text: string): string {
+  if (!/[\u0600-\u06FF]/.test(text)) return text;
+  if (!/[0-9A-Za-z]/.test(text)) {
+    const m = /^(.*?)([….]+)$/.exec(text);
+    return m && m[1] ? m[2] + m[1] : text;
+  }
+  return text.split(/\s+/).reverse().join(' ');
+}
 
 /**
  * Generate a themed OG image as a PNG buffer.
  */
 export async function generateOgImage(data: OgImageData): Promise<Buffer> {
+  const rtl = !!data.locale && RTL_LOCALES.has(data.locale);
+  const vis = rtl ? toRtlVisual : (s: string) => s;
+  // Per-locale stacks mirroring global.css: body face for descriptions and
+  // metadata (Arabic reaches Alexandria as the registered Arabic fallback),
+  // display face for the title and site brand. Every stack keeps a registered
+  // font per script (Latin + Arabic) so satori never hits a missing-glyph
+  // error on mixed strings like "3 مايو 2026".
+  const bodyStack = 'Source Sans 3, Alexandria';
+  const displayStack = rtl
+    ? 'Alexandria, Source Sans 3'
+    : 'Source Serif 4, Source Sans 3, Alexandria';
+  // RTL alignment: single-line text boxes are pushed to the inline end via
+  // justifyContent, wrapped lines align with textAlign (satori ignores one
+  // of the two depending on whether the text fills its container).
+  const alignEnd = rtl ? { textAlign: 'right', justifyContent: 'flex-end' } : {};
+
   // Truncate for readability at OG image dimensions.
-  const desc = data.description
+  const rawDesc = data.description
     ? data.description.length > 120
       ? data.description.slice(0, 117) + '…'
       : data.description
     : '';
-  const title = data.title.length > 80 ? data.title.slice(0, 77) + '…' : data.title;
+  const desc = vis(rawDesc);
+  const rawTitle = data.title.length > 80 ? data.title.slice(0, 77) + '…' : data.title;
+  const title = vis(rawTitle);
+  const date = data.date ? vis(data.date) : '';
+  const category = data.category ? vis(data.category) : '';
 
   // Build tag elements for the bottom right.
   const bottomRight =
@@ -82,7 +137,10 @@ export async function generateOgImage(data: OgImageData): Promise<Buffer> {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        background: 'linear-gradient(135deg, #1e3a5f 0%, #2a408e 40%, #4a6cf7 100%)',
+        fontFamily: bodyStack,
+        background: rtl
+          ? 'linear-gradient(225deg, #1e3a5f 0%, #2a408e 40%, #4a6cf7 100%)'
+          : 'linear-gradient(135deg, #1e3a5f 0%, #2a408e 40%, #4a6cf7 100%)',
         padding: '40px',
       },
       children: {
@@ -106,6 +164,7 @@ export async function generateOgImage(data: OgImageData): Promise<Buffer> {
               props: {
                 style: {
                   display: 'flex',
+                  flexDirection: rtl ? 'row-reverse' : 'row',
                   justifyContent: 'space-between',
                   alignItems: 'center',
                   width: '100%',
@@ -116,15 +175,15 @@ export async function generateOgImage(data: OgImageData): Promise<Buffer> {
                     props: {
                       style: {
                         display: 'flex',
-                        backgroundColor: data.category ? '#eef2ff' : 'transparent',
+                        backgroundColor: category ? '#eef2ff' : 'transparent',
                         color: '#2a408e',
                         fontSize: '18px',
                         fontWeight: 700,
-                        padding: data.category ? '8px 20px' : '0',
+                        padding: category ? '8px 20px' : '0',
                         borderRadius: '24px',
-                        border: data.category ? '1.5px solid #c7d2fe' : 'none',
+                        border: category ? '1.5px solid #c7d2fe' : 'none',
                       },
-                      children: data.category ?? '',
+                      children: category,
                     },
                   },
                   {
@@ -135,7 +194,7 @@ export async function generateOgImage(data: OgImageData): Promise<Buffer> {
                         color: '#6b7280',
                         fontSize: '18px',
                       },
-                      children: data.date ?? '',
+                      children: date,
                     },
                   },
                 ],
@@ -156,14 +215,17 @@ export async function generateOgImage(data: OgImageData): Promise<Buffer> {
                   {
                     type: 'div',
                     props: {
-                      style: {
-                        display: 'flex',
-                        fontSize: title.length > 60 ? '36px' : '44px',
-                        fontWeight: 700,
-                        color: '#1f2937',
-                        lineHeight: 1.2,
-                      },
-                      children: title,
+                    style: {
+                      display: 'flex',
+                      fontSize: title.length > 60 ? '36px' : '44px',
+                      fontWeight: 700,
+                      fontFamily: displayStack,
+                      color: '#1f2937',
+                      lineHeight: 1.2,
+                      width: '100%',
+                      ...alignEnd,
+                    },
+                    children: title,
                     },
                   },
                   {
@@ -174,6 +236,8 @@ export async function generateOgImage(data: OgImageData): Promise<Buffer> {
                         fontSize: '22px',
                         color: '#6b7280',
                         lineHeight: 1.4,
+                        width: '100%',
+                        ...alignEnd,
                       },
                       children: desc,
                     },
@@ -187,6 +251,7 @@ export async function generateOgImage(data: OgImageData): Promise<Buffer> {
               props: {
                 style: {
                   display: 'flex',
+                  flexDirection: rtl ? 'row-reverse' : 'row',
                   alignItems: 'center',
                   justifyContent: 'space-between',
                   width: '100%',
@@ -220,13 +285,14 @@ export async function generateOgImage(data: OgImageData): Promise<Buffer> {
                         {
                           type: 'div',
                           props: {
-                            style: {
-                              display: 'flex',
-                              fontSize: '22px',
-                              fontWeight: 700,
-                              color: '#2a408e',
-                            },
-                            children: SITE.title,
+                        style: {
+                          display: 'flex',
+                          fontSize: '22px',
+                          fontWeight: 700,
+                          fontFamily: displayStack,
+                          color: '#2a408e',
+                        },
+                        children: SITE.title,
                           },
                         },
                       ],
@@ -257,8 +323,12 @@ export async function generateOgImage(data: OgImageData): Promise<Buffer> {
     width: WIDTH,
     height: HEIGHT,
     fonts: [
-      { name: 'Inter', data: fontRegular, weight: 400, style: 'normal' },
-      { name: 'Inter', data: fontBold, weight: 700, style: 'normal' },
+      { name: 'Source Sans 3', data: bodyRegular, weight: 400, style: 'normal' },
+      { name: 'Source Sans 3', data: bodyBold, weight: 700, style: 'normal' },
+      { name: 'Source Serif 4', data: serifRegular, weight: 400, style: 'normal' },
+      { name: 'Source Serif 4', data: serifBold, weight: 700, style: 'normal' },
+      { name: 'Alexandria', data: alexandriaRegular, weight: 400, style: 'normal' },
+      { name: 'Alexandria', data: alexandriaBold, weight: 700, style: 'normal' },
     ],
   });
 

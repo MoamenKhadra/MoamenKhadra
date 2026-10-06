@@ -1,10 +1,13 @@
 ---
 import BaseLayout from '~/layouts/BaseLayout.astro';
-import PostList from '~/components/PostList.astro';
-import Pagination from '~/components/Pagination.astro';
-import { SITE } from '~/config';
-import { localizedPath } from '~/i18n/utils';
+import PostCard from '~/components/PostCard.astro';
+import ProjectCard from '~/components/ProjectCard.astro';
+import { CONTACT, HERO_SKILLS, HERO_STATS, SITE, SOCIALS } from '~/config';
+import { TESTIMONIALS } from '~/data/testimonials';
+import { localizedPath, useTranslations } from '~/i18n/utils';
 import { getPosts } from '~/utils/posts';
+import { getFeaturedProjects } from '~/utils/projects';
+import { Icon } from 'astro-icon/components';
 
 export function getStaticPaths() {
   return SITE.locales.map((l) => ({
@@ -13,22 +16,266 @@ export function getStaticPaths() {
   }));
 }
 const { locale } = Astro.props;
+const t = useTranslations(locale);
 
-const posts = await getPosts(locale);
-const pageSize = SITE.postsPerPage;
-const lastPage = Math.max(1, Math.ceil(posts.length / pageSize));
-const currentPage = 1;
-const pagePosts = posts.slice(0, pageSize);
+const [featuredProjects, latestPosts] = await Promise.all([
+  getFeaturedProjects(locale, 4),
+  getPosts(locale),
+]);
+const posts = latestPosts.slice(0, 3);
 
-const hrefForPage = (n: number) => localizedPath(n === 1 ? '/' : `/page/${n}/`, locale);
+const projectsPath = localizedPath('/projects/', locale);
+const blogPath = localizedPath('/blog/', locale);
+
+// "find me on" row — derived from SOCIALS so URLs/env overrides stay in
+// one place (excludes contact channels like WhatsApp/Email and RSS).
+const contactLinks = SOCIALS.filter((s) =>
+  ['GitHub', 'LinkedIn', 'Instagram', 'X', 'YouTube'].includes(s.label),
+);
+
+// Client-facing sections: what I sell + how an engagement runs.
+const services = [
+  { icon: 'lucide:code-xml', titleKey: 'home.serviceWebTitle', descKey: 'home.serviceWebDesc' },
+  {
+    icon: 'lucide:pen-tool',
+    titleKey: 'home.serviceDesignTitle',
+    descKey: 'home.serviceDesignDesc',
+  },
+  {
+    icon: 'lucide:lightbulb',
+    titleKey: 'home.serviceConsultTitle',
+    descKey: 'home.serviceConsultDesc',
+  },
+] as const;
+
+const processSteps = [
+  { titleKey: 'home.process1Title', descKey: 'home.process1Desc' },
+  { titleKey: 'home.process2Title', descKey: 'home.process2Desc' },
+  { titleKey: 'home.process3Title', descKey: 'home.process3Desc' },
+  { titleKey: 'home.process4Title', descKey: 'home.process4Desc' },
+  { titleKey: 'home.process5Title', descKey: 'home.process5Desc' },
+] as const;
 ---
 
 <BaseLayout title={SITE.title} description={SITE.description} pathWithoutLocale="/">
-  <PostList posts={pagePosts} locale={locale} />
-  <Pagination
-    currentPage={currentPage}
-    lastPage={lastPage}
-    hrefForPage={hrefForPage}
-    locale={locale}
-  />
+  {/* Hero */}
+  <section class="hero bg-base-100 rounded-box border-base-300 mb-10 border py-10 sm:py-14">
+    <div class="hero-content text-center">
+      <div class="max-w-3xl">
+        <span class="badge badge-primary badge-outline badge-sm mb-5 gap-1.5 px-3 py-4">
+          <span class="bg-primary inline-block h-1.5 w-1.5 animate-pulse rounded-full"></span>
+          {t('home.availability')}
+        </span>
+
+        <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">{t('site.authorName')}</h1>
+        <p class="text-primary mt-2 text-lg font-semibold">{t('home.role')}</p>
+        <p class="text-base-content/70 mx-auto mt-4 max-w-2xl text-base sm:text-lg">
+          {t('home.tagline')}
+        </p>
+
+        {/* Core stack chips */}
+        <div
+          class="mt-6 flex flex-wrap items-center justify-center gap-1.5"
+          aria-label={t('home.skillsLabel')}
+        >
+          {HERO_SKILLS.map((skill) => (
+            <span class="badge badge-soft badge-sm">{skill}</span>
+          ))}
+        </div>
+
+        {/* Stats */}
+        <dl class="bg-base-200/60 mx-auto mt-8 grid max-w-md grid-cols-3 gap-2 rounded-box p-4">
+          {
+            HERO_STATS.map((stat) => (
+              <div class="flex flex-col items-center gap-0.5">
+                <dt class="sr-only">{t(stat.labelKey)}</dt>
+                <dd class="text-primary text-2xl font-bold sm:text-3xl">{stat.value}</dd>
+                <span class="text-base-content/70 text-xs leading-tight">
+                  {t(stat.labelKey)}
+                </span>
+              </div>
+            ))
+          }
+        </dl>
+
+        <div class="mt-8 flex flex-wrap justify-center gap-3">
+          <a
+            href={CONTACT.whatsapp}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn btn-primary"
+          >
+            <Icon name="simple-icons:whatsapp" width={16} height={16} />
+            {t('home.ctaWhatsapp')}
+          </a>
+          <a href={`mailto:${CONTACT.email}`} class="btn btn-outline">
+            <Icon name="lucide:mail" width={16} height={16} />
+            {t('home.ctaEmail')}
+          </a>
+          <a href={projectsPath} class="btn btn-ghost">{t('home.viewProjects')}</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* Services — what clients hire me for */}
+  <section class="mb-10">
+    <div class="mb-4">
+      <h2 class="text-2xl font-bold tracking-tight">{t('home.servicesTitle')}</h2>
+      <p class="text-base-content/70 mt-1 text-sm sm:text-base">{t('home.servicesPitch')}</p>
+    </div>
+    <div class="grid grid-cols-1 gap-5 md:grid-cols-3">
+      {
+        services.map((service) => (
+          <div class="card border-base-300 bg-base-100 border">
+            <div class="card-body gap-2 p-5 sm:p-6">
+              <span class="bg-primary/10 text-primary inline-flex h-10 w-10 items-center justify-center rounded-md">
+                <Icon name={service.icon} width={20} height={20} />
+              </span>
+              <h3 class="text-lg font-bold">{t(service.titleKey)}</h3>
+              <p class="text-base-content/70 text-sm">{t(service.descKey)}</p>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  {
+    featuredProjects.length > 0 && (
+      <section class="mb-10">
+        <div class="mb-4 flex items-center justify-between gap-4">
+          <h2 class="text-2xl font-bold tracking-tight">{t('home.featuredProjects')}</h2>
+          <a href={projectsPath} class="text-primary link-hover text-sm font-medium">
+            {t('home.viewAllProjects')}
+          </a>
+        </div>
+        <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+          {featuredProjects.map((project) => (
+            <ProjectCard project={project} locale={locale} />
+          ))}
+        </div>
+      </section>
+    )
+  }
+
+  {/* Process — how an engagement runs, step by step */}
+  <section class="mb-10">
+    <div class="mb-4">
+      <h2 class="text-2xl font-bold tracking-tight">{t('home.processTitle')}</h2>
+      <p class="text-base-content/70 mt-1 text-sm sm:text-base">{t('home.processPitch')}</p>
+    </div>
+    <ol class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-5">
+      {
+        processSteps.map((step, index) => (
+          <li class="card border-base-300 bg-base-100 h-full border">
+            <div class="card-body gap-2 p-5">
+              <span class="badge badge-primary badge-outline badge-sm w-fit">
+                {String(index + 1).padStart(2, '0')}
+              </span>
+              <h3 class="text-base font-bold">{t(step.titleKey)}</h3>
+              <p class="text-base-content/70 text-sm">{t(step.descKey)}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  {/* Testimonials — placeholder data; replace quotes in src/data/testimonials.ts */}
+  {
+    TESTIMONIALS[locale].length > 0 && (
+      <section class="mb-10">
+        <div class="mb-4">
+          <h2 class="text-2xl font-bold tracking-tight">{t('home.testimonialsTitle')}</h2>
+          <p class="text-base-content/70 mt-1 text-sm sm:text-base">{t('home.testimonialsPitch')}</p>
+        </div>
+        <div class="grid grid-cols-1 gap-5 md:grid-cols-3">
+          {TESTIMONIALS[locale].map((item) => (
+            <figure class="card border-base-300 bg-base-100 h-full border">
+              <div class="card-body gap-3 p-5 sm:p-6">
+                <blockquote class="text-base-content/80 text-sm">“{item.quote}”</blockquote>
+                <figcaption class="mt-auto flex items-center gap-3 pt-2">
+                  <div class="avatar placeholder">
+                    <div class="bg-primary/10 text-primary w-10 rounded-box">
+                      <span class="text-sm font-bold">{item.initials}</span>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="text-sm font-semibold">{item.name}</div>
+                    <div class="text-base-content/60 text-xs">{item.role}</div>
+                  </div>
+                </figcaption>
+              </div>
+            </figure>
+          ))}
+        </div>
+      </section>
+    )
+  }
+
+  {
+    posts.length > 0 && (
+      <section class="mb-10">
+        <div class="mb-4 flex items-center justify-between gap-4">
+          <h2 class="text-2xl font-bold tracking-tight">{t('home.latestPosts')}</h2>
+          <a href={blogPath} class="text-primary link-hover text-sm font-medium">
+            {t('home.viewAllPosts')}
+          </a>
+        </div>
+        <div id="post-list">
+          {posts.map((post, index) => (
+            <PostCard post={post} locale={locale} prioritizeLcp={index === 0} />
+          ))}
+        </div>
+      </section>
+    )
+  }
+
+  {/* Contact — final CTA */}
+  <section
+    id="contact"
+    class="bg-base-200/60 rounded-box border-base-300 mb-4 border px-6 py-10 text-center sm:px-10"
+  >
+    <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">{t('home.contactTitle')}</h2>
+    <p class="text-base-content/70 mx-auto mt-3 max-w-xl">{t('home.contactPitch')}</p>
+
+    <div class="mt-6 flex flex-wrap justify-center gap-3">
+      <a
+        href={CONTACT.whatsapp}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="btn btn-primary"
+      >
+        <Icon name="simple-icons:whatsapp" width={16} height={16} />
+        {t('home.whatsapp')}
+      </a>
+      <a href={`mailto:${CONTACT.email}`} class="btn btn-outline">
+        <Icon name="lucide:mail" width={16} height={16} />
+        {t('home.email')}
+      </a>
+    </div>
+
+    <div class="text-base-content/70 mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm">
+      <span class="inline-flex items-center gap-1.5">
+        <Icon name="lucide:map-pin" width={14} height={14} />
+        {t('home.location')}
+      </span>
+      <span class="hidden sm:inline">·</span>
+      <span class="inline-flex items-center gap-4">
+        <span>{t('home.findMeOn')}</span>
+        {contactLinks.map((link) => (
+          <a
+            href={link.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-primary link-hover inline-flex items-center gap-1"
+          >
+            <Icon name={link.icon} width={14} height={14} />
+            {link.label}
+          </a>
+        ))}
+      </span>
+    </div>
+  </section>
 </BaseLayout>

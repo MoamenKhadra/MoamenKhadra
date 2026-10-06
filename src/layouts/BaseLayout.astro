@@ -9,9 +9,16 @@ import Panel from '../components/Panel.astro';
 import SEO from '../components/SEO.astro';
 import BackToTop from '../components/islands/BackToTop.astro';
 import { ClientRouter } from 'astro:transitions';
-import faviconImg from '../assets/images/site/favicon.svg';
-import { SITE, type Locale } from '../config';
-import { detectLocale, htmlLang, useTranslations, stripLocale, withBase } from '../i18n/utils';
+import faviconImg from '../assets/images/site/favicon.ico';
+import type { Locale } from '../config';
+import {
+  detectLocale,
+  htmlDir,
+  htmlLang,
+  useTranslations,
+  stripLocale,
+  withBase,
+} from '../i18n/utils';
 import { buildSeo, type SeoMeta } from '../utils/seo';
 
 interface Props {
@@ -58,6 +65,7 @@ const {
 const locale: Locale = detectLocale(Astro.url.pathname);
 const t = useTranslations(locale);
 const lang = htmlLang(locale);
+const dir = htmlDir(locale);
 
 const pathWithoutLocale = Astro.props.pathWithoutLocale ?? stripLocale(Astro.url.pathname);
 const meta: SeoMeta =
@@ -78,30 +86,25 @@ const meta: SeoMeta =
 ---
 
 <!doctype html>
-<html lang={lang} data-theme="lofi">
+<html lang={lang} dir={dir} data-theme="lofi">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="generator" content={Astro.generator} />
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f5f5f5" />
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#141414" />
-    <link rel="icon" type="image/svg+xml" href={withBase(faviconImg.src)} />
-    <link
-      rel="alternate"
-      type="application/rss+xml"
-      title={`${SITE.title} (EN)`}
-      href={withBase('/rss.xml')}
-    />
-    <link
-      rel="alternate"
-      type="application/rss+xml"
-      title={`${SITE.title} (FR)`}
-      href={withBase('/fr/rss.xml')}
-    />
+    {/* `.ico` isn't processed by the image pipeline — the import IS the URL string. */}
+    <link rel="icon" href={withBase(faviconImg)} />
+    {/* Feed auto-discovery (<link rel="alternate">) is rendered by <SEO>. */}
     <SEO meta={meta} />
     {/* Custom fonts configured via Astro Fonts API */}
     <Font cssVariable="--font-source-sans-3" />
+    <Font cssVariable="--font-alexandria" />
+    <Font cssVariable="--font-alexandria-latin" />
     <Font cssVariable="--font-lato" />
+    <Font cssVariable="--font-source-serif-4" />
+    <Font cssVariable="--font-noto-naskh-arabic" />
+    <Font cssVariable="--font-noto-naskh-arabic-latin" />
     <Font cssVariable="--font-jetbrains-mono" preload />
     <ClientRouter />
     {/* Apply persisted theme as early as possible to avoid FOUC. */}
@@ -129,7 +132,7 @@ const meta: SeoMeta =
   <body>
     <a
       href="#main"
-      class="focus:bg-primary focus:text-primary-content sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded focus:px-3 focus:py-2"
+      class="focus:bg-primary focus:text-primary-content sr-only focus:not-sr-only focus:fixed focus:top-2 focus:start-2 focus:z-50 focus:rounded focus:px-3 focus:py-2"
     >
       {t('site.skipToContent')}
     </a>
@@ -137,7 +140,7 @@ const meta: SeoMeta =
     <Sidebar locale={locale} />
 
     <div class="chirpy-main-wrapper">
-      <div class="chirpy-shell">
+      <div class="chirpy-shell max-w-7xl">
         <Topbar locale={locale} crumbs={crumbs} availableLocales={availableLocales} />
 
         <div class="flex flex-1 gap-10">
@@ -145,7 +148,7 @@ const meta: SeoMeta =
             <main
               id="main"
               aria-label="Main Content"
-              class:list={['min-w-0 flex-1 py-6 lg:pr-2', narrow ? 'mx-auto w-full max-w-3xl' : '']}
+              class:list={['min-w-0 flex-1 py-6 lg:pe-2', narrow ? 'mx-auto w-full max-w-3xl' : '']}
             >
               <slot />
             </main>

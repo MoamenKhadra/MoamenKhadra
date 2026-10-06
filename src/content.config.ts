@@ -3,9 +3,11 @@
  *
  * Folder convention: `src/content/<collection>/<locale>/**`
  *  - posts/en/**  -> EN posts
- *  - posts/fr/**  -> FR posts
+ *  - posts/ar/**  -> AR posts
  *  - pages/en/**  -> EN static pages (about, etc.)
- *  - pages/fr/**  -> FR static pages
+ *  - pages/ar/**  -> AR static pages
+ *  - projects/en/**  -> EN portfolio projects
+ *  - projects/ar/**  -> AR portfolio projects
  *
  * The locale is derived from the file path so authors do not need to set it
  * manually (but they may override it in frontmatter).
@@ -106,6 +108,44 @@ const posts = defineCollection({
   schema: baseFrontmatter,
 });
 
+/**
+ * Portfolio projects. Leaner than posts: no tags/categories/TOC, but adds
+ * a tech stack and external links (repo / live demo). `featured` marks
+ * projects promoted on the home page.
+ */
+const projects = defineCollection({
+  loader: glob({
+    pattern: '**/*.{md,mdx}',
+    base: './src/content/projects',
+  }),
+  schema: ({ image }) =>
+    z.object({
+      title: z.string().min(1).max(140),
+      description: z.string().min(1).max(280),
+      /** Ordering only — projects are listed newest first, featured first. */
+      pubDate: z.coerce.date(),
+      updatedDate: z.coerce.date().optional(),
+      heroImage: z.union([image(), z.string()]).optional(),
+      heroImageAlt: z.string().optional(),
+      /** Technologies used, shown as badges on cards and the detail page. */
+      tech: z.array(z.string()).default([]),
+      /** External links. Both optional; omitted links simply don't render. */
+      links: z
+        .object({
+          repo: z.url().optional(),
+          demo: z.url().optional(),
+        })
+        .default({}),
+      /** Show on the home page's featured projects section. */
+      featured: z.boolean().default(false),
+      draft: z.boolean().default(false),
+      /** Optional locale override; otherwise inferred from path. */
+      lang: localeEnum.optional(),
+      /** Maps translated variants together, like posts. */
+      translationKey: z.string().optional(),
+    }),
+});
+
 const pages = defineCollection({
   loader: glob({
     pattern: '**/*.{md,mdx}',
@@ -120,4 +160,4 @@ const pages = defineCollection({
       }),
 });
 
-export const collections = { posts, pages };
+export const collections = { posts, pages, projects };

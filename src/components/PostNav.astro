@@ -31,7 +31,7 @@ const t = useTranslations(locale);
               name="lucide:arrow-up"
               width={12}
               height={12}
-              class="inline -rotate-90 align-baseline"
+              class="inline -rotate-90 align-baseline rtl:rotate-90"
             />
             {t('post.previous')}
           </p>
@@ -48,7 +48,7 @@ const t = useTranslations(locale);
       <a
         href={postPath(next)}
         rel="next"
-        class="card bg-base-200 hover:bg-base-300 transition-colors sm:text-right"
+        class="card bg-base-200 hover:bg-base-300 transition-colors sm:text-end"
       >
         <div class="card-body">
           <p class="text-base-content/70 text-xs tracking-wide uppercase">
@@ -57,7 +57,7 @@ const t = useTranslations(locale);
               name="lucide:arrow-up"
               width={12}
               height={12}
-              class="inline rotate-90 align-baseline"
+              class="inline rotate-90 align-baseline rtl:-rotate-90"
             />
           </p>
           <p class="font-semibold">{next.data.title}</p>

@@ -1,0 +1,281 @@
+---
+/**
+ * /resume — structured resume: summary, skills, experience, education,
+ * leadership, languages. A "Print / Save as PDF" button triggers the
+ * browser print dialog; @media print styles keep the output clean.
+ */
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import { CONTACT, SITE } from '~/config';
+import { useTranslations, localizedPath } from '~/i18n/utils';
+import { RESUME } from '~/data/resume';
+import { Icon } from 'astro-icon/components';
+
+export function getStaticPaths() {
+  return SITE.locales.map((l) => ({
+    params: { locale: l === SITE.defaultLocale ? undefined : l },
+    props: { locale: l },
+  }));
+}
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const resume = RESUME[locale];
+
+const contactChips = [
+  { label: CONTACT.whatsapp.replace('https://', ''), href: CONTACT.whatsapp, icon: 'simple-icons:whatsapp', ext: true },
+  { label: CONTACT.email, href: `mailto:${CONTACT.email}`, icon: 'lucide:mail', ext: false },
+  { label: CONTACT.linkedin.replace('https://', ''), href: CONTACT.linkedin, icon: 'simple-icons:linkedin', ext: true },
+  { label: CONTACT.github.replace('https://', ''), href: CONTACT.github, icon: 'simple-icons:github', ext: true },
+];
+---
+
+<BaseLayout
+  title={t('resume.title')}
+  description={t('resume.description')}
+  crumbs={[{ label: t('nav.home'), href: localizedPath('/', locale) }, { label: t('resume.title') }]}
+>
+  <article class="px-1 py-6 sm:px-2 sm:py-8">
+    <header class="mb-8 flex flex-wrap items-start justify-between gap-4">
+      <div>
+        <h1 class="text-3xl leading-tight font-extrabold tracking-tight">
+          {t('resume.title')}
+        </h1>
+        <p class="text-base-content/70 mt-1">
+          {t('site.authorName')} · {t('home.role')} · {t('home.location')}
+        </p>
+      </div>
+      <button
+        type="button"
+        id="resume-print"
+        class="btn btn-outline btn-sm no-print"
+        aria-label={t('resume.print')}
+      >
+        <Icon name="lucide:printer" width={14} height={14} />
+        {t('resume.print')}
+      </button>
+    </header>
+
+    {/* Contact chips */}
+    <section class="mb-8 flex flex-wrap gap-2" aria-label={t('resume.contact')}>
+      {
+        contactChips.map((chip) => (
+          <a
+            href={chip.href}
+            class="badge badge-outline badge-lg gap-1.5 px-3 py-4 hover:badge-primary"
+            target={chip.ext ? '_blank' : undefined}
+            rel={chip.ext ? 'noopener noreferrer' : undefined}
+          >
+            <Icon name={chip.icon} width={14} height={14} />
+            {chip.label}
+          </a>
+        ))
+      }
+    </section>
+
+    {/* Summary */}
+    <section class="mb-8">
+      <h2 class="border-base-300 text-xl font-bold tracking-tight border-b pb-2">
+        {t('resume.summary')}
+      </h2>
+      <p class="text-base-content/80 mt-3 leading-relaxed">{resume.summary}</p>
+    </section>
+
+    {/* Skills */}
+    <section class="mb-8">
+      <h2 class="border-base-300 text-xl font-bold tracking-tight border-b pb-2">
+        {t('resume.skills')}
+      </h2>
+      <dl class="mt-3 space-y-3">
+        {
+          resume.skills.map((group) => (
+            <div class="flex flex-col gap-1.5 sm:flex-row sm:gap-4">
+              <dt class="text-base-content shrink-0 pt-0.5 font-semibold sm:w-44">
+                {group.label}
+              </dt>
+              <dd class="flex flex-wrap gap-1.5">
+                {group.items.map((item) => (
+                  <span class="badge badge-soft badge-sm">{item}</span>
+                ))}
+              </dd>
+            </div>
+          ))
+        }
+      </dl>
+    </section>
+
+    {/* Experience */}
+    <section class="mb-8">
+      <h2 class="border-base-300 text-xl font-bold tracking-tight border-b pb-2">
+        {t('resume.experience')}
+      </h2>
+      <ol class="mt-4 space-y-6">
+        {
+          resume.experience.map((entry) => (
+            <li class="relative border-base-300 border-s-2 ps-5">
+              <span class="bg-primary absolute -start-[5px] top-1.5 block h-2 w-2 rounded-full" />
+              <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                <h3 class="text-base-content font-semibold">
+                  {entry.orgUrl ? (
+                    <a
+                      href={entry.orgUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="link-hover text-primary"
+                    >
+                      {entry.org}
+                    </a>
+                  ) : (
+                    entry.org
+                  )}
+                </h3>
+                <span class="text-base-content/60 text-sm font-medium">{entry.period}</span>
+              </div>
+              <p class="text-base-content/70 text-sm italic">
+                {entry.role} · {entry.location}
+              </p>
+              <ul class="text-base-content/80 mt-2 list-disc space-y-1.5 ps-5 text-sm leading-relaxed">
+                {entry.bullets.map((bullet) => (
+                  <li>{bullet}</li>
+                ))}
+              </ul>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    {/* Education */}
+    <section class="mb-8">
+      <h2 class="border-base-300 text-xl font-bold tracking-tight border-b pb-2">
+        {t('resume.education')}
+      </h2>
+      <ol class="mt-4 space-y-6">
+        {
+          resume.education.map((entry) => (
+            <li class="relative border-base-300 border-s-2 ps-5">
+              <span class="bg-primary absolute -start-[5px] top-1.5 block h-2 w-2 rounded-full" />
+              <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                <h3 class="text-base-content font-semibold">{entry.institution}</h3>
+                <span class="text-base-content/60 text-sm font-medium">{entry.period}</span>
+              </div>
+              <p class="text-base-content/70 text-sm italic">
+                {entry.degree} · {entry.location}
+              </p>
+              {entry.coursework && entry.coursework.length > 0 && (
+                <div class="mt-2">
+                  <p class="text-base-content/60 text-xs font-semibold uppercase tracking-wide">
+                    {t('resume.coursework')}
+                  </p>
+                  <p class="text-base-content/80 mt-1 text-sm leading-relaxed">
+                    {entry.coursework.join(' · ')}
+                  </p>
+                </div>
+              )}
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    {/* Leadership */}
+    <section class="mb-8">
+      <h2 class="border-base-300 text-xl font-bold tracking-tight border-b pb-2">
+        {t('resume.leadership')}
+      </h2>
+      <ol class="mt-4 space-y-6">
+        {
+          resume.leadership.map((entry) => (
+            <li class="relative border-base-300 border-s-2 ps-5">
+              <span class="bg-primary absolute -start-[5px] top-1.5 block h-2 w-2 rounded-full" />
+              <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                <h3 class="text-base-content font-semibold">{entry.org}</h3>
+                <span class="text-base-content/60 text-sm font-medium">{entry.period}</span>
+              </div>
+              <p class="text-base-content/70 text-sm italic">
+                {entry.role} · {entry.location}
+              </p>
+              <ul class="text-base-content/80 mt-2 list-disc space-y-1.5 ps-5 text-sm leading-relaxed">
+                {entry.bullets.map((bullet) => (
+                  <li>{bullet}</li>
+                ))}
+              </ul>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    {/* Languages */}
+    <section class="mb-4">
+      <h2 class="border-base-300 text-xl font-bold tracking-tight border-b pb-2">
+        {t('resume.languages')}
+      </h2>
+      <ul class="mt-3 flex flex-wrap gap-x-6 gap-y-2">
+        {
+          resume.languages.map((lang) => (
+            <li class="text-sm">
+              <span class="text-base-content font-semibold">{lang.name}</span>
+              <span class="text-base-content/70"> — {lang.level}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+  </article>
+
+  <button
+    type="button"
+    id="resume-print-bottom"
+    class="btn btn-primary no-print mb-6 w-full sm:hidden"
+    aria-label={t('resume.print')}
+  >
+    <Icon name="lucide:printer" width={16} height={16} />
+    {t('resume.print')}
+  </button>
+</BaseLayout>
+
+<style is:global>
+  @media print {
+    /* Hide chrome around the resume itself. */
+    .no-print,
+    #sidebar,
+    [data-sidebar-mask],
+    .chirpy-topbar,
+    .chirpy-panel-rail,
+    .back-to-top,
+    footer,
+    #comments {
+      display: none !important;
+    }
+
+    body {
+      background: white !important;
+      color: black !important;
+    }
+
+    .chirpy-main-wrapper,
+    .chirpy-shell,
+    main,
+    article {
+      max-width: none !important;
+      width: 100% !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      display: block !important;
+    }
+
+    a {
+      text-decoration: none !important;
+      color: inherit !important;
+    }
+  }
+</style>
+
+<script>
+  function bindPrint() {
+    document.querySelectorAll('#resume-print, #resume-print-bottom').forEach((btn) => {
+      btn.addEventListener('click', () => window.print());
+    });
+  }
+  document.addEventListener('astro:page-load', bindPrint);
+  bindPrint();
+</script>

@@ -1,0 +1,102 @@
+---
+/**
+ * Portfolio project card: image (optional) + title + description +
+ * tech badges + repo/demo links. Used by the home page and the
+ * /projects listing.
+ */
+import type { Locale } from '../config';
+import { useTranslations } from '../i18n/utils';
+import { projectPath, projectHeroImage, type Project } from '../utils/projects';
+import SmartImage from './SmartImage.astro';
+import { Icon } from 'astro-icon/components';
+
+interface Props {
+  project: Project;
+  locale: Locale;
+  prioritizeLcp?: boolean;
+}
+
+const { project, locale, prioritizeLcp = false } = Astro.props;
+const t = useTranslations(locale);
+const href = projectPath(project);
+const heroAsset = projectHeroImage(project);
+const heroAlt = project.data.heroImageAlt ?? '';
+const { repo, demo } = project.data.links;
+---
+
+<article class="chirpy-card chirpy-card--vertical">
+  <div class:list={['chirpy-card-link', heroAsset ? 'has-image' : 'no-image']}>
+    {
+      heroAsset && (
+        <div class="chirpy-card-image-wrap">
+          <SmartImage
+            src={heroAsset}
+            alt={heroAlt}
+            class="chirpy-card-image"
+            loading={prioritizeLcp ? 'eager' : 'lazy'}
+            fetchpriority={prioritizeLcp ? 'high' : 'auto'}
+            widths={[384, 768, 960]}
+            sizes="(max-width: 767px) 100vw, 448px"
+            quality={75}
+          />
+        </div>
+      )
+    }
+
+    <div class:list={['chirpy-card-body', heroAsset ? '' : 'full']}>
+      <a href={href} class="chirpy-card-stretch">
+        <h2 class="chirpy-card-title">
+          {project.data.title}
+        </h2>
+      </a>
+
+      <p
+        class:list={[
+          'text-base-content/70 text-base',
+          heroAsset ? 'mt-2 mb-3 line-clamp-2' : 'mt-1 mb-2 line-clamp-3',
+        ]}
+      >
+        {project.data.description}
+      </p>
+
+      {
+        project.data.tech.length > 0 && (
+          <div class="mt-auto flex flex-wrap gap-1.5 pt-2">
+            {project.data.tech.map((item) => (
+              <span class="badge badge-outline badge-sm">{item}</span>
+            ))}
+          </div>
+        )
+      }
+
+      {
+        (repo || demo) && (
+          <div class="chirpy-card-actions text-base-content/70 mt-3 flex items-center gap-3 text-xs">
+            {repo && (
+              <a
+                href={repo}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-1"
+              >
+                <Icon name="lucide:github" width={12} height={12} />
+                {t('projects.repo')}
+              </a>
+            )}
+            {demo && (
+              <a
+                href={demo}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-1"
+              >
+                <Icon name="lucide:external-link" width={12} height={12} />
+                {t('projects.demo')}
+              </a>
+            )}
+          </div>
+        )
+      }
+    </div>
+  </div>
+</article>

@@ -16,7 +16,7 @@ const showThemeCredits = SITE.footer.showThemeCredits ?? true;
 const shouldRenderRightFooter = Boolean(footerRightText) || showThemeCredits;
 const resolvedLeftText = footerLeftText
   ?.replaceAll('{year}', String(year))
-  .replaceAll('{author}', SITE.author.name);
+  .replaceAll('{author}', t('site.authorName'));
 ---
 
 <footer
@@ -31,7 +31,7 @@ const resolvedLeftText = footerLeftText
         <>
           © <time>{year}</time>{' '}
           <a href={SITE.author.url ?? '#'} rel="noopener" class="hover:text-primary">
-            {SITE.author.name}
+            {t('site.authorName')}
           </a>
           . {t('footer.copyright')}
         </>

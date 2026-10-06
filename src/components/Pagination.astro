@@ -40,12 +40,12 @@ if (lastPage > 1) push(lastPage);
   {
     prev ? (
       <a rel="prev" href={prev} class="btn btn-sm btn-ghost gap-1">
-        <Icon name="lucide:arrow-up" width={14} height={14} class="-rotate-90" />
+        <Icon name="lucide:arrow-up" width={14} height={14} class="-rotate-90 rtl:rotate-90" />
         {t('pagination.previous')}
       </a>
     ) : (
       <button disabled class="btn btn-sm btn-ghost pointer-events-none gap-1 opacity-40">
-        <Icon name="lucide:arrow-up" width={14} height={14} class="-rotate-90" />
+        <Icon name="lucide:arrow-up" width={14} height={14} class="-rotate-90 rtl:rotate-90" />
         {t('pagination.previous')}
       </button>
     )
@@ -75,12 +75,12 @@ if (lastPage > 1) push(lastPage);
     next ? (
       <a rel="next" href={next} class="btn btn-sm btn-ghost gap-1">
         {t('pagination.next')}
-        <Icon name="lucide:arrow-up" width={14} height={14} class="rotate-90" />
+        <Icon name="lucide:arrow-up" width={14} height={14} class="rotate-90 rtl:-rotate-90" />
       </a>
     ) : (
       <button disabled class="btn btn-sm btn-ghost pointer-events-none gap-1 opacity-40">
         {t('pagination.next')}
-        <Icon name="lucide:arrow-up" width={14} height={14} class="rotate-90" />
+        <Icon name="lucide:arrow-up" width={14} height={14} class="rotate-90 rtl:-rotate-90" />
       </button>
     )
   }
