@@ -2,12 +2,10 @@
 title: واجهة Qwizyo البرمجية
 description: الواجهة الخلفية لمنصة إدارة الاختبارات — واجهات REST للمستخدمين والمجموعات والتكليفات والاختبارات مع تحكم في الوصول حسب الدور، مبنية بـ Python وFlask.
 pubDate: 2024-04-15
-heroImage: ../../../assets/images/projects/placeholder-thumbnail.png
-heroImageAlt: مخطط بنية واجهة Qwizyo البرمجية
 tech: [Python, Flask, MongoDB, REST API]
 links:
-  repo: https://github.com/MomenGit/qwizyo-api
-featured: true
+  repo: https://github.com/MoamenKhadra/qwizyo-api
+featured: false
 ---
 
 الواجهة الخلفية لمنصة إدارة اختبارات، توفر واجهات REST تغطي دورة

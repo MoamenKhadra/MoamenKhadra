@@ -1,12 +1,13 @@
 ---
 /**
- * Portfolio project card: image (optional) + title + description +
- * tech badges + repo/demo links. Used by the home page and the
- * /projects listing.
+ * Portfolio project card: thumbnail (fixed height, repo/demo pills on
+ * the top corners) + title + description + tech badges (max 2 lines).
+ * Used by the /projects listing. Projects without a hero image fall
+ * back to the auto-generated OG image (mirrors PostLayout).
  */
-import type { Locale } from '../config';
-import { useTranslations } from '../i18n/utils';
-import { projectPath, projectHeroImage, type Project } from '../utils/projects';
+import { SITE, type Locale } from '../config';
+import { useTranslations, withBase } from '../i18n/utils';
+import { projectPath, projectHeroImage, projectSlug, type Project } from '../utils/projects';
 import SmartImage from './SmartImage.astro';
 import { Icon } from 'astro-icon/components';
 
@@ -19,8 +20,13 @@ interface Props {
 const { project, locale, prioritizeLcp = false } = Astro.props;
 const t = useTranslations(locale);
 const href = projectPath(project);
-const heroAsset = projectHeroImage(project);
-const heroAlt = project.data.heroImageAlt ?? '';
+
+const skipAutoOg = !SITE.autoOgImage || import.meta.env.CI_SKIP_AUTO_OG_IMAGE === 'true';
+const ogPrefix = locale === SITE.defaultLocale ? '' : `${locale}/`;
+const heroAsset =
+  projectHeroImage(project) ??
+  (skipAutoOg ? undefined : withBase(`/og/${ogPrefix}projects/${projectSlug(project)}.png`));
+const heroAlt = project.data.heroImageAlt ?? project.data.title;
 const { repo, demo } = project.data.links;
 ---
 
@@ -39,6 +45,37 @@ const { repo, demo } = project.data.links;
             sizes="(max-width: 767px) 100vw, 448px"
             quality={75}
           />
+
+          {
+            (repo || demo) && (
+              <div class="chirpy-card-corner-links justify-start">
+                {repo && (
+                  <a
+                    href={repo}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="chirpy-card-corner-link"
+                    aria-label={t('projects.repo')}
+                  >
+                    <Icon name="lucide:github" width={12} height={12} />
+                    {t('projects.repo')}
+                  </a>
+                )}
+                {demo && (
+                  <a
+                    href={demo}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="chirpy-card-corner-link"
+                    aria-label={t('projects.demo')}
+                  >
+                    <Icon name="lucide:external-link" width={12} height={12} />
+                    {t('projects.demo')}
+                  </a>
+                )}
+              </div>
+            )
+          }
         </div>
       )
     }
@@ -61,16 +98,16 @@ const { repo, demo } = project.data.links;
 
       {
         project.data.tech.length > 0 && (
-          <div class="mt-auto flex flex-wrap gap-1.5 pt-2">
+          <div class="mt-auto line-clamp-2 pt-2">
             {project.data.tech.map((item) => (
-              <span class="badge badge-outline badge-sm">{item}</span>
+              <span class="badge badge-outline badge-sm mr-1.5 mb-1.5">{item}</span>
             ))}
           </div>
         )
       }
 
       {
-        (repo || demo) && (
+        !heroAsset && (repo || demo) && (
           <div class="chirpy-card-actions text-base-content/70 mt-3 flex items-center gap-3 text-xs">
             {repo && (
               <a

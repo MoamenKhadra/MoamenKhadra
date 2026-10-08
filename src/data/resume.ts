@@ -48,6 +48,8 @@ export interface ResumeData {
   summary: string;
   skills: SkillGroup[];
   experience: ExperienceEntry[];
+  /** Internships, training programs, and similar non-job entries. */
+  training: ExperienceEntry[];
   education: EducationEntry[];
   leadership: LeadershipEntry[];
   languages: LanguageEntry[];
@@ -55,27 +57,36 @@ export interface ResumeData {
 
 const en: ResumeData = {
   summary:
-    'Software engineer experienced in building scalable APIs and data-driven dashboards, with a strong focus on performance, clean architecture, and system design principles. Seeking full-time or part-time opportunities to contribute to production-ready web applications.',
+    'Freelance product engineer who builds business websites and tailored web applications from discovery through deployment. Combines product thinking with full-stack engineering across modern frontend frameworks, secure APIs, databases, SSR, and cloud-ready delivery. Available for freelance engagements and software engineering opportunities.',
   skills: [
     {
-      label: 'Programming languages',
+      label: 'Languages & platforms',
       items: [
         'Python',
         'C',
         'C#',
         'HTML/CSS',
         'JavaScript',
-        'Node.js',
         'TypeScript',
         'SQL',
       ],
     },
     {
-      label: 'Frameworks',
-      items: ['ASP.NET', '.NET Core', 'Angular', 'Flask', 'Express.js'],
+      label: 'Frontend & application development',
+      items: [
+        'Angular',
+        'Vite',
+        'Tailwind CSS',
+        'daisyUI',
+        'ASP.NET Core',
+        '.NET Web API',
+        'Blazor',
+        'Flask',
+        'Express.js',
+      ],
     },
     {
-      label: 'Tools & technologies',
+      label: 'Data, delivery & product quality',
       items: [
         'Linux',
         'Docker',
@@ -87,12 +98,29 @@ const en: ResumeData = {
         'MongoDB',
         'Redis',
         'NGINX',
-        'Puppet',
+        'Supabase',
+        'SSR',
+        'REST APIs',
+        'SEO',
+        'Internationalization & RTL',
         'Figma',
       ],
     },
   ],
   experience: [
+    {
+      org: 'Independent Client Work',
+      role: 'Freelance Software Engineer',
+      period: '2025 — Present',
+      location: 'Remote · Egypt & GCC',
+      bullets: [
+        'Deliver conversion-focused websites for businesses in Bahrain, Iraq, Saudi Arabia, and the UAE, translating complex services into clear digital experiences.',
+        'Built production-ready applications with Angular SSR, TypeScript, and Supabase, including role-based operations tooling for shipments, drivers, cash-on-delivery collection, and merchant self-service.',
+        'Own delivery end to end: responsive UI, secure contact flows, REST APIs, SEO metadata, RTL localization, deployment, and maintainable handover documentation.',
+      ],
+    },
+  ],
+  training: [
     {
       org: 'DEPI — Digital Egyptian Pioneers Initiative',
       orgUrl: 'https://depi.gov.eg/',
@@ -100,11 +128,10 @@ const en: ResumeData = {
       period: 'Nov 2025 — Jul 2026',
       location: 'Remote',
       bullets: [
-        'Completed an intensive internship focused on building full-stack web applications using C#, .NET Web API, Blazor, WebAssembly, SQL Server, HTML, CSS, and Bootstrap.',
-        'Designed and implemented RESTful APIs and a Blazor-based frontend following SDLC best practices and clean code principles (SOLID, DRY, KISS).',
-        'Applied layered architecture, design patterns, and data structures to build maintainable and scalable features.',
-        'Implemented a Student Affairs Management System with authentication-ready architecture, relational database design, and transactional data handling.',
-        'Applied database concepts including ACID properties, with exposure to CAP and BASE tradeoffs in distributed systems.',
+        'Completed an intensive full-stack .NET internship using C#, .NET Web API, Blazor, WebAssembly, SQL Server, HTML, CSS, and Bootstrap.',
+        'Designed RESTful APIs and Blazor interfaces using SDLC practices and clean-code principles including SOLID, DRY, and KISS.',
+        'Applied layered architecture, design patterns, and data structures to build maintainable, scalable features.',
+        'Built a Student Affairs Management System with authentication-ready architecture, relational data modeling, and transactional handling.',
       ],
     },
     {
@@ -114,10 +141,10 @@ const en: ResumeData = {
       period: 'Jul 2024 — Oct 2024',
       location: 'Remote',
       bullets: [
-        'Built full-stack web applications using C#, .NET Web API, Blazor, WebAssembly, SQL Server, HTML, CSS, and Bootstrap.',
-        'Designed RESTful APIs and a Blazor frontend following SDLC best practices and clean code principles (SOLID, DRY, KISS).',
-        'Applied layered architecture and design patterns to deliver maintainable, scalable features.',
-        'Implemented a Student Affairs Management System with relational database design and transactional data handling.',
+        'Built full-stack web applications with C#, .NET Web API, Blazor, WebAssembly, SQL Server, HTML, CSS, and Bootstrap.',
+        'Designed RESTful APIs and Blazor interfaces using SDLC practices and clean-code principles.',
+        'Used layered architecture and design patterns to deliver maintainable, scalable features.',
+        'Implemented a Student Affairs Management System with relational data modeling and transactional handling.',
       ],
     },
     {
@@ -127,10 +154,10 @@ const en: ResumeData = {
       period: 'Apr 2023 — Apr 2024',
       location: 'Remote',
       bullets: [
-        'Completed a rigorous 12-month, full-time, project-based program emphasizing low-level programming, system design, and full-stack development.',
-        'Built and deployed full-stack applications using Python, JavaScript, C, Flask, Express.js, and RESTful APIs with MySQL, MongoDB, and Redis.',
-        'Developed system-level solutions using Linux, shell scripting, and Docker, and applied DevOps concepts including NGINX deployment.',
-        'Implemented real-world projects including an Airbnb Clone and a File Management API.',
+        'Completed a rigorous 12-month, full-time, project-based program in low-level programming, system design, and full-stack development.',
+        'Built and deployed applications with Python, JavaScript, C, Flask, Express.js, REST APIs, MySQL, MongoDB, and Redis.',
+        'Applied Linux, shell scripting, Docker, and NGINX deployment practices to system-level and full-stack projects.',
+        'Delivered portfolio projects including an Airbnb clone and a file-management API.',
       ],
     },
   ],
@@ -174,18 +201,18 @@ const en: ResumeData = {
 
 const ar: ResumeData = {
   summary:
-    'مهندس برمجيات ذو خبرة في بناء واجهات برمجية قابلة للتوسّع ولوحات معلومات تعتمد على البيانات، مع تركيز قوي على الأداء ونظارة البنية ومبادئ تصميم الأنظمة. أبحث عن فرص عمل بدوام كامل أو جزئي للمساهمة في تطبيقات ويب جاهزة للإنتاج.',
+    'مهندس منتجات برمجية مستقل يبني مواقع أعمال وتطبيقات ويب مخصّصة من مرحلة الاستكشاف حتى النشر. أجمع بين عقلية المنتج والهندسة المتكاملة عبر أطر الواجهات الحديثة والواجهات البرمجية الآمنة وقواعد البيانات والرسم على الخادم والتسليم الجاهز للإنتاج. متاح لمشاريع العمل الحر وفرص هندسة البرمجيات.',
   skills: [
     {
-      label: 'لغات البرمجة',
-      items: ['Python', 'C', 'C#', 'HTML/CSS', 'JavaScript', 'Node.js', 'TypeScript', 'SQL'],
+      label: 'اللغات والمنصات',
+      items: ['Python', 'C', 'C#', 'HTML/CSS', 'JavaScript', 'TypeScript', 'SQL'],
     },
     {
-      label: 'أُطر العمل',
-      items: ['ASP.NET', '.NET Core', 'Angular', 'Flask', 'Express.js'],
+      label: 'تطوير الواجهات والتطبيقات',
+      items: ['Angular', 'Vite', 'Tailwind CSS', 'daisyUI', 'ASP.NET Core', '.NET Web API', 'Blazor', 'Flask', 'Express.js'],
     },
     {
-      label: 'الأدوات والتقنيات',
+      label: 'البيانات والتسليم وجودة المنتج',
       items: [
         'Linux',
         'Docker',
@@ -197,12 +224,29 @@ const ar: ResumeData = {
         'MongoDB',
         'Redis',
         'NGINX',
-        'Puppet',
+        'Supabase',
+        'SSR',
+        'REST APIs',
+        'SEO',
+        'التدويل ودعم RTL',
         'Figma',
       ],
     },
   ],
   experience: [
+    {
+      org: 'مشاريع عملاء مستقلة',
+      role: 'مهندس برمجيات مستقل',
+      period: '2025 — حتى الآن',
+      location: 'عن بُعد · مصر والخليج',
+      bullets: [
+        'أقدّم مواقع أعمال تركّز على التحويل لشركات في البحرين والعراق والسعودية والإمارات، وأحوّل الخدمات المعقدة إلى تجارب رقمية واضحة.',
+        'بنيت تطبيقات جاهزة للإنتاج باستخدام Angular SSR وTypeScript وSupabase، منها أدوات تشغيل تعتمد على الصلاحيات لإدارة الشحنات والسائقين والتحصيل النقدي وخدمة التجار الذاتية.',
+        'أتولى التسليم من البداية إلى النهاية: واجهات متجاوبة، ومسارات تواصل آمنة، وواجهات REST، وتحسين الظهور في محركات البحث، والتعريب ودعم RTL، والنشر، وتوثيق التسليم القابل للصيانة.',
+      ],
+    },
+  ],
+  training: [
     {
       org: 'DEPI — مبادرة الرواد المصريين الرقميين',
       orgUrl: 'https://depi.gov.eg/',
@@ -210,11 +254,10 @@ const ar: ResumeData = {
       period: 'نوفمبر 2025 — يوليو 2026',
       location: 'عن بُعد',
       bullets: [
-        'أكملت تدريبًا مكثفًا على بناء تطبيقات ويب متكاملة باستخدام C# و.NET Web API وBlazor وWebAssembly وSQL Server وHTML وCSS وBootstrap.',
-        'صمّمت ونفّذت واجهات RESTful وواجهة أمامية قائمة على Blazor وفق أفضل ممارسات دورة تطوير البرمجيات ومبادئ الكود النظيف (SOLID وDRY وKISS).',
+        'أكملت تدريبًا مكثفًا في تطوير .NET المتكامل باستخدام C# و.NET Web API وBlazor وWebAssembly وSQL Server وHTML وCSS وBootstrap.',
+        'صمّمت واجهات REST وواجهات Blazor وفق ممارسات دورة تطوير البرمجيات ومبادئ الكود النظيف، ومنها SOLID وDRY وKISS.',
         'طبّقت بنية الطبقات وأنماط التصميم وهياكل البيانات لبناء ميزات قابلة للصيانة والتوسّع.',
-        'نفّذت نظامًا لإدارة شؤون الطلاب ببنية جاهزة للمصادقة وتصميم قاعدة بيانات علائقية ومعالجة معاملاتية.',
-        'طبّقت مفاهيم قواعد البيانات بما فيها خصائص ACID، مع تعرّف على المقايضات في CAP وBASE داخل الأنظمة الموزّعة.',
+        'بنيت نظام إدارة شؤون الطلاب ببنية جاهزة للمصادقة ونمذجة بيانات علائقية ومعالجة معاملاتية.',
       ],
     },
     {
@@ -225,9 +268,9 @@ const ar: ResumeData = {
       location: 'عن بُعد',
       bullets: [
         'بنيت تطبيقات ويب متكاملة باستخدام C# و.NET Web API وBlazor وWebAssembly وSQL Server وHTML وCSS وBootstrap.',
-        'صمّمت واجهات RESTful وواجهة Blazor وفق أفضل ممارسات SDLC ومبادئ الكود النظيف (SOLID وDRY وKISS).',
-        'طبّقت بنية الطبقات وأنماط التصميم لتسليم ميزات قابلة للصيانة والقابلية للتوسّع.',
-        'نفّذت نظامًا لإدارة شؤون الطلاب بتصميم قاعدة بيانات علائقية ومعالجة معاملاتية.',
+        'صمّمت واجهات REST وواجهات Blazor وفق ممارسات SDLC ومبادئ الكود النظيف.',
+        'طبّقت بنية الطبقات وأنماط التصميم لتسليم ميزات قابلة للصيانة والتوسّع.',
+        'نفّذت نظام إدارة شؤون الطلاب بنمذجة بيانات علائقية ومعالجة معاملاتية.',
       ],
     },
     {
@@ -237,10 +280,10 @@ const ar: ResumeData = {
       period: 'أبريل 2023 — أبريل 2024',
       location: 'عن بُعد',
       bullets: [
-        'أكملت برنامجًا مكثفًا لمدة 12 شهرًا بدوام كامل يعتمد على المشاريع، يركز على البرمجة منخفضة المستوى وتصميم الأنظمة والتطوير المتكامل.',
-        'بنيت ونشرت تطبيقات متكاملة باستخدام Python وJavaScript وC وFlask وExpress.js وواجهات RESTful مع MySQL وMongoDB وRedis.',
-        'طوّرت حلولًا على مستوى النظام باستخدام Linux وبرمجة سطر الأوامر وDocker، وطبّقت مفاهيم DevOps منها نشر NGINX.',
-        'نفّذت مشاريع واقعية منها نسخة من Airbnb وواجهة برمجية لإدارة الملفات.',
+        'أكملت برنامجًا مكثفًا لمدة 12 شهرًا بدوام كامل يعتمد على المشاريع في البرمجة منخفضة المستوى وتصميم الأنظمة والتطوير المتكامل.',
+        'بنيت ونشرت تطبيقات باستخدام Python وJavaScript وC وFlask وExpress.js وواجهات REST مع MySQL وMongoDB وRedis.',
+        'طبّقت Linux وبرمجة سطر الأوامر وDocker ونشر NGINX في مشاريع على مستوى النظام والتطوير المتكامل.',
+        'قدّمت مشاريع في المعرض منها نسخة من Airbnb وواجهة برمجية لإدارة الملفات.',
       ],
     },
   ],

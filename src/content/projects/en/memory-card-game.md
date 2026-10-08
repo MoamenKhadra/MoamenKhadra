@@ -6,7 +6,7 @@ heroImage: ../../../assets/images/projects/pokemon-memory-card-game-thumbnail.pn
 heroImageAlt: Memory card game board with Pokémon cards
 tech: [Angular, TypeScript, Tailwind CSS, RxJS, PokéAPI]
 links:
-  repo: https://github.com/MomenGit/memory-card
+  repo: https://github.com/MoamenKhadra/memory-card
   demo: https://momentadev-memory-card.vercel.app/
 featured: true
 ---

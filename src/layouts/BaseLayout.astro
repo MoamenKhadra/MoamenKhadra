@@ -31,8 +31,13 @@ interface Props {
   publishedTime?: Date;
   modifiedTime?: Date;
   tags?: string[];
-  /** Hide the right panel (e.g. on post pages where TOC takes its place). */
-  hidePanel?: boolean;
+  /**
+   * Right-rail widgets. Omitted → no widget rail at all (the rail still
+   * renders when an `aside-bottom` slot provides content, e.g. the TOC).
+   * 'posts' → Recently Updated + Trending Tags (blog listing pages).
+   * 'projects' → Recent Projects + Tech Stack (projects listing page).
+   */
+  panel?: 'posts' | 'projects';
   /** Constrain main content width (used by Pages like About/404). */
   narrow?: boolean;
   /** Breadcrumb segments shown in the topbar. */
@@ -55,7 +60,7 @@ const {
   publishedTime,
   modifiedTime,
   tags,
-  hidePanel = false,
+  panel,
   narrow = false,
   crumbs = [],
   seo,
@@ -157,9 +162,9 @@ const meta: SeoMeta =
           </div>
 
           {
-            !hidePanel && (
+            (panel || Astro.slots.has('aside-bottom')) && (
               <aside class="chirpy-panel-rail" aria-label="Sidebar widgets">
-                <Panel locale={locale} />
+                {panel && <Panel locale={locale} variant={panel} />}
                 <slot name="aside-bottom" />
               </aside>
             )

@@ -2,10 +2,8 @@
 title: موقع Momentadev الشخصي
 description: موقع مطوّر متعدد اللغات مبني بـ Astro وTailwind CSS v4 وdaisyUI — مع دعم كامل للاتجاه من اليمين لليسار، وتوليد تلقائي لصور OG، وبحث عبر Pagefind.
 pubDate: 2026-09-20
-heroImage: ../../../assets/images/projects/placeholder-thumbnail.png
-heroImageAlt: لقطة شاشة لموقع Momentadev
 tech: [Astro, TypeScript, Tailwind CSS, daisyUI, Pagefind]
-featured: true
+featured: false
 ---
 
 الموقع الذي تتصفّحه الآن. أردت مساحة شخصية على الإنترنت تبدو سريعة،

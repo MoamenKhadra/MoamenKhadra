@@ -2,11 +2,9 @@
 title: نسخة من AirBnB
 description: تطبيق متكامل يحاكي AirBnB بُني ضمن برنامج ALX لهندسة البرمجيات — واجهات Flask وMySQL مع ORM وصفحات عقارات ديناميكية ونشر عبر NGINX.
 pubDate: 2023-11-15
-heroImage: ../../../assets/images/projects/placeholder-thumbnail.png
-heroImageAlt: صفحة العقارات في نسخة AirBnB مع الفلاتر
 tech: [Python, Flask, MySQL, NGINX, HTML/CSS]
 links:
-  repo: https://github.com/MomenGit/AirBnB_clone
+  repo: https://github.com/MoamenKhadra/AirBnB_clone
 featured: false
 ---
 
@@ -28,7 +26,7 @@ featured: false
 `v2` (إعداد MySQL)، `v3` (إطار Flask)، و`v4` (الواجهة الكاملة
 والواجهات البرمجية والنشر).
 
-- [v1](https://github.com/MomenGit/AirBnB_clone) ·
-  [v2](https://github.com/MomenGit/AirBnB_clone_v2) ·
-  [v3](https://github.com/MomenGit/AirBnB_clone_v3) ·
+- [v1](https://github.com/MoamenKhadra/AirBnB_clone) ·
+  [v2](https://github.com/MoamenKhadra/AirBnB_clone_v2) ·
+  [v3](https://github.com/MoamenKhadra/AirBnB_clone_v3) ·
   [v4](https://github.com/Mohamed-Adel-A/AirBnB_clone_v4)

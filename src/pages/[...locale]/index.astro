@@ -1,12 +1,10 @@
 ---
 import BaseLayout from '~/layouts/BaseLayout.astro';
-import PostCard from '~/components/PostCard.astro';
-import ProjectCard from '~/components/ProjectCard.astro';
-import { CONTACT, HERO_SKILLS, HERO_STATS, SITE, SOCIALS } from '~/config';
+import SmartImage from '~/components/SmartImage.astro';
+import { CONTACT, EXPERIENCE_START, HERO_SKILLS, SITE, SOCIALS } from '~/config';
 import { TESTIMONIALS } from '~/data/testimonials';
 import { localizedPath, useTranslations } from '~/i18n/utils';
-import { getPosts } from '~/utils/posts';
-import { getFeaturedProjects } from '~/utils/projects';
+import { getProjects, projectHeroImage, projectPath } from '~/utils/projects';
 import { Icon } from 'astro-icon/components';
 
 export function getStaticPaths() {
@@ -18,14 +16,29 @@ export function getStaticPaths() {
 const { locale } = Astro.props;
 const t = useTranslations(locale);
 
-const [featuredProjects, latestPosts] = await Promise.all([
-  getFeaturedProjects(locale, 4),
-  getPosts(locale),
-]);
-const posts = latestPosts.slice(0, 3);
+const allProjects = await getProjects(locale);
+
+// Hero stats: project + client counts come from the content collections,
+// experience years from a fixed start date vs. the build date.
+const yearsExperience = (() => {
+  const start = new Date(EXPERIENCE_START);
+  const now = new Date();
+  let years = now.getFullYear() - start.getFullYear();
+  if (now < new Date(now.getFullYear(), start.getMonth(), start.getDate())) years--;
+  return Math.max(years, 0);
+})();
+
+const stats = [
+  { value: `${allProjects.length}+`, labelKey: 'home.statsProjects' },
+  { value: `${yearsExperience}+`, labelKey: 'home.statsYears' },
+  { value: `${TESTIMONIALS[locale].length}+`, labelKey: 'home.statsClients' },
+] as const;
 
 const projectsPath = localizedPath('/projects/', locale);
-const blogPath = localizedPath('/blog/', locale);
+
+// Case studies are driven by project frontmatter: every project whose
+// md file carries a `caseStudy` block appears here, in pubDate order.
+const caseStudyProjects = allProjects.filter((project) => project.data.caseStudy);
 
 // "find me on" row — derived from SOCIALS so URLs/env overrides stay in
 // one place (excludes contact channels like WhatsApp/Email and RSS).
@@ -37,14 +50,9 @@ const contactLinks = SOCIALS.filter((s) =>
 const services = [
   { icon: 'lucide:code-xml', titleKey: 'home.serviceWebTitle', descKey: 'home.serviceWebDesc' },
   {
-    icon: 'lucide:pen-tool',
+    icon: 'lucide:layout-dashboard',
     titleKey: 'home.serviceDesignTitle',
     descKey: 'home.serviceDesignDesc',
-  },
-  {
-    icon: 'lucide:lightbulb',
-    titleKey: 'home.serviceConsultTitle',
-    descKey: 'home.serviceConsultDesc',
   },
 ] as const;
 
@@ -53,7 +61,6 @@ const processSteps = [
   { titleKey: 'home.process2Title', descKey: 'home.process2Desc' },
   { titleKey: 'home.process3Title', descKey: 'home.process3Desc' },
   { titleKey: 'home.process4Title', descKey: 'home.process4Desc' },
-  { titleKey: 'home.process5Title', descKey: 'home.process5Desc' },
 ] as const;
 ---
 
@@ -62,31 +69,23 @@ const processSteps = [
   <section class="hero bg-base-100 rounded-box border-base-300 mb-10 border py-10 sm:py-14">
     <div class="hero-content text-center">
       <div class="max-w-3xl">
-        <span class="badge badge-primary badge-outline badge-sm mb-5 gap-1.5 px-3 py-4">
-          <span class="bg-primary inline-block h-1.5 w-1.5 animate-pulse rounded-full"></span>
+        <span class="badge badge-success badge-outline badge-sm mb-5 gap-1.5 px-3 py-4">
+          <span class="bg-success inline-block h-1.5 w-1.5 animate-pulse rounded-full"></span>
           {t('home.availability')}
         </span>
 
-        <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">{t('site.authorName')}</h1>
-        <p class="text-primary mt-2 text-lg font-semibold">{t('home.role')}</p>
+        <p class="text-primary text-sm font-semibold tracking-wide">
+          {t('site.authorName')} · {t('home.role')}
+        </p>
+        <h1 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">{t('home.heroTitle')}</h1>
         <p class="text-base-content/70 mx-auto mt-4 max-w-2xl text-base sm:text-lg">
           {t('home.tagline')}
         </p>
 
-        {/* Core stack chips */}
-        <div
-          class="mt-6 flex flex-wrap items-center justify-center gap-1.5"
-          aria-label={t('home.skillsLabel')}
-        >
-          {HERO_SKILLS.map((skill) => (
-            <span class="badge badge-soft badge-sm">{skill}</span>
-          ))}
-        </div>
-
         {/* Stats */}
         <dl class="bg-base-200/60 mx-auto mt-8 grid max-w-md grid-cols-3 gap-2 rounded-box p-4">
           {
-            HERO_STATS.map((stat) => (
+            stats.map((stat) => (
               <div class="flex flex-col items-center gap-0.5">
                 <dt class="sr-only">{t(stat.labelKey)}</dt>
                 <dd class="text-primary text-2xl font-bold sm:text-3xl">{stat.value}</dd>
@@ -97,6 +96,16 @@ const processSteps = [
             ))
           }
         </dl>
+
+        {/* Technical stack is proof of delivery, not the primary message. */}
+        <div
+          class="mt-5 flex flex-wrap items-center justify-center gap-1.5"
+          aria-label={t('home.skillsLabel')}
+        >
+          {HERO_SKILLS.map((skill) => (
+            <span class="badge badge-soft badge-sm">{skill}</span>
+          ))}
+        </div>
 
         <div class="mt-8 flex flex-wrap justify-center gap-3">
           <a
@@ -118,13 +127,13 @@ const processSteps = [
     </div>
   </section>
 
-  {/* Services — what clients hire me for */}
+  {/* Services — the two outcomes clients can buy. */}
   <section class="mb-10">
     <div class="mb-4">
       <h2 class="text-2xl font-bold tracking-tight">{t('home.servicesTitle')}</h2>
       <p class="text-base-content/70 mt-1 text-sm sm:text-base">{t('home.servicesPitch')}</p>
     </div>
-    <div class="grid grid-cols-1 gap-5 md:grid-cols-3">
+    <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
       {
         services.map((service) => (
           <div class="card border-base-300 bg-base-100 border">
@@ -141,19 +150,69 @@ const processSteps = [
     </div>
   </section>
 
+  {/* Case studies — problem, product, practical result. */}
   {
-    featuredProjects.length > 0 && (
+    caseStudyProjects.length > 0 && (
       <section class="mb-10">
-        <div class="mb-4 flex items-center justify-between gap-4">
-          <h2 class="text-2xl font-bold tracking-tight">{t('home.featuredProjects')}</h2>
-          <a href={projectsPath} class="text-primary link-hover text-sm font-medium">
+        <div class="mb-4 flex items-end justify-between gap-4">
+          <div>
+            <h2 class="text-2xl font-bold tracking-tight">{t('home.caseStudiesTitle')}</h2>
+            <p class="text-base-content/70 mt-1 text-sm sm:text-base">{t('home.caseStudiesPitch')}</p>
+          </div>
+          <a href={projectsPath} class="text-primary link-hover shrink-0 text-sm font-medium">
             {t('home.viewAllProjects')}
           </a>
         </div>
-        <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
-          {featuredProjects.map((project) => (
-            <ProjectCard project={project} locale={locale} />
-          ))}
+        <div class="grid grid-cols-1 gap-5 lg:grid-cols-2">
+          {
+            caseStudyProjects.map(
+              (project) =>
+                project.data.caseStudy && (
+                  <article class="card border-base-300 bg-base-100 overflow-hidden border">
+                    {
+                      projectHeroImage(project) && (
+                        <div class="border-base-300 border-b">
+                          <SmartImage
+                            src={projectHeroImage(project)!}
+                            alt={project.data.heroImageAlt ?? project.data.title}
+                            class="h-52 w-full object-cover"
+                            loading="lazy"
+                            widths={[480, 768, 960]}
+                            sizes="(max-width: 1023px) 100vw, 50vw"
+                            quality={75}
+                          />
+                        </div>
+                      )
+                    }
+                    <div class="card-body gap-3 p-5 sm:p-6">
+                      <div>
+                        <p class="text-primary text-xs font-semibold tracking-wide uppercase">
+                          {project.data.caseStudy.label}
+                        </p>
+                        <h3 class="mt-1 text-xl font-bold">{project.data.title}</h3>
+                      </div>
+                      <div class="text-base-content/80 space-y-2 text-sm leading-relaxed">
+                        <p>{project.data.caseStudy.problem}</p>
+                        <p class="text-base-content font-medium">{project.data.caseStudy.result}</p>
+                      </div>
+                      <div class="card-actions mt-1 flex-wrap gap-3">
+                        <a href={projectPath(project)} class="btn btn-outline btn-sm">
+                          {t('home.viewCaseStudy')}
+                        </a>
+                        <a
+                          href={CONTACT.whatsapp}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          class="text-primary link-hover self-center text-sm font-medium"
+                        >
+                          {t('home.requestSimilar')}
+                        </a>
+                      </div>
+                    </div>
+                  </article>
+                ),
+            )
+          }
         </div>
       </section>
     )
@@ -165,7 +224,7 @@ const processSteps = [
       <h2 class="text-2xl font-bold tracking-tight">{t('home.processTitle')}</h2>
       <p class="text-base-content/70 mt-1 text-sm sm:text-base">{t('home.processPitch')}</p>
     </div>
-    <ol class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-5">
+    <ol class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
       {
         processSteps.map((step, index) => (
           <li class="card border-base-300 bg-base-100 h-full border">
@@ -182,7 +241,7 @@ const processSteps = [
     </ol>
   </section>
 
-  {/* Testimonials — placeholder data; replace quotes in src/data/testimonials.ts */}
+  {/* Testimonials — concise proof after the relevant work examples. */}
   {
     TESTIMONIALS[locale].length > 0 && (
       <section class="mb-10">
@@ -194,11 +253,11 @@ const processSteps = [
           {TESTIMONIALS[locale].map((item) => (
             <figure class="card border-base-300 bg-base-100 h-full border">
               <div class="card-body gap-3 p-5 sm:p-6">
-                <blockquote class="text-base-content/80 text-sm">“{item.quote}”</blockquote>
+                <blockquote class="text-base-content/80 line-clamp-5 text-sm">“{item.quote}”</blockquote>
                 <figcaption class="mt-auto flex items-center gap-3 pt-2">
                   <div class="avatar placeholder">
                     <div class="bg-primary/10 text-primary w-10 rounded-box">
-                      <span class="text-sm font-bold">{item.initials}</span>
+                      <img src={item.avatar} alt={item.name} />
                     </div>
                   </div>
                   <div>
@@ -208,24 +267,6 @@ const processSteps = [
                 </figcaption>
               </div>
             </figure>
-          ))}
-        </div>
-      </section>
-    )
-  }
-
-  {
-    posts.length > 0 && (
-      <section class="mb-10">
-        <div class="mb-4 flex items-center justify-between gap-4">
-          <h2 class="text-2xl font-bold tracking-tight">{t('home.latestPosts')}</h2>
-          <a href={blogPath} class="text-primary link-hover text-sm font-medium">
-            {t('home.viewAllPosts')}
-          </a>
-        </div>
-        <div id="post-list">
-          {posts.map((post, index) => (
-            <PostCard post={post} locale={locale} prioritizeLcp={index === 0} />
           ))}
         </div>
       </section>
@@ -262,7 +303,7 @@ const processSteps = [
         {t('home.location')}
       </span>
       <span class="hidden sm:inline">·</span>
-      <span class="inline-flex items-center gap-4">
+      <span class="inline-flex items-center gap-4 flex-wrap">
         <span>{t('home.findMeOn')}</span>
         {contactLinks.map((link) => (
           <a

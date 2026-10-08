@@ -122,7 +122,7 @@ const projects = defineCollection({
     z.object({
       title: z.string().min(1).max(140),
       description: z.string().min(1).max(280),
-      /** Ordering only — projects are listed newest first, featured first. */
+      /** Ordering only — projects are listed newest first. */
       pubDate: z.coerce.date(),
       updatedDate: z.coerce.date().optional(),
       heroImage: z.union([image(), z.string()]).optional(),
@@ -136,6 +136,21 @@ const projects = defineCollection({
           demo: z.url().optional(),
         })
         .default({}),
+      /**
+       * Home-page case study card. Projects with this block appear in
+       * the home "case studies" section (count is unlimited); each
+       * locale's file carries its own text.
+       */
+      caseStudy: z
+        .object({
+          /** Small label above the card title. */
+          label: z.string().min(1).max(160),
+          /** The business need. */
+          problem: z.string().min(1).max(500),
+          /** Emphasised outcome line. */
+          result: z.string().min(1).max(500),
+        })
+        .optional(),
       /** Show on the home page's featured projects section. */
       featured: z.boolean().default(false),
       draft: z.boolean().default(false),

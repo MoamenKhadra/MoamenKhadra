@@ -2,12 +2,10 @@
 title: Files Management API
 description: A file storage API with token-based authentication, uploads, listing, and permission management — with Redis caching for performance, built on Node.js and Express.
 pubDate: 2024-03-15
-heroImage: ../../../assets/images/projects/placeholder-thumbnail.png
-heroImageAlt: Files Management API request flow
 tech: [Node.js, Express, MongoDB, Redis]
 links:
-  repo: https://github.com/MomenGit/alx-files_manager
-featured: true
+  repo: https://github.com/MoamenKhadra/alx-files_manager
+featured: false
 ---
 
 A file storage API that handles authentication, uploads, listing, and

@@ -44,6 +44,7 @@ const hrefForPage = (n: number) => localizedPath(n === 1 ? '/blog/' : `/blog/pag
   title={`${t('list.allPosts')} — ${t('pagination.page')} ${current}`}
   pathWithoutLocale={`/blog/page/${current}/`}
   crumbs={[{ label: t('nav.blog'), href: localizedPath('/blog/', locale) }, { label: `${t('pagination.page')} ${current}` }]}
+  panel="posts"
 >
   <header class="mb-6">
     <h1 class="text-3xl font-bold tracking-tight">{t('list.allPosts')}</h1>

@@ -5,7 +5,7 @@
  * have no tags/categories/draft listings beyond the basics:
  *  - filter drafts in production
  *  - infer locale from filesystem path (projects/en/foo -> 'en')
- *  - sort: featured first, then pubDate desc
+ *  - sort: pubDate desc
  *  - resolve translation siblings via `translationKey`
  */
 
@@ -63,10 +63,9 @@ export function projectPath(entry: Project): string {
   return withBase(path);
 }
 
-/** Sort projects: featured first, then pubDate desc. */
+/** Sort projects: newest first (pubDate desc). */
 export function sortProjects(projects: Project[]): Project[] {
   return [...projects].sort((a, b) => {
-    if (a.data.featured !== b.data.featured) return a.data.featured ? -1 : 1;
     const at = a.data.pubDate?.valueOf?.() ?? 0;
     const bt = b.data.pubDate?.valueOf?.() ?? 0;
     return bt - at;

@@ -1,120 +1,137 @@
 ---
 title: Privacy Policy
-description: How this site collects, uses, and protects personal data.
+description: How Momentadev handles personal information when you visit the site or use its contact and comment features.
 translationKey: privacy
 ---
 
-This Privacy Policy explains how **[SITE_NAME]** ("we", "us", or "our")
-collects, uses, and protects information when you visit **[SITE_URL]**.
+**Effective date:** October 8, 2026
 
-> Replace values in [BRACKETS] to customize this policy for your site.
-> This template is informational and not legal advice.
+**Last updated:** October 8, 2026
 
-## 1. Who we are
+This Privacy Policy explains how **Moamen Khadra** (“I”, “me”, or “my”)
+handles information in connection with Momentadev (the “site”). This is a
+personal portfolio and professional website.
 
-- Website owner: **[OWNER_NAME / LEGAL_ENTITY]**
-- Contact email: **[CONTACT_EMAIL]**
-- Effective date: **[EFFECTIVE_DATE]**
-- Last updated: **[LAST_UPDATED_DATE]**
+## 1. Who I am
 
-## 2. Information we collect
+- **Website owner:** Moamen Khadra
+- **Privacy contact:** [moamen.khadra@outlook.com](mailto:moamen.khadra@outlook.com)
+- **Location:** Alexandria, Egypt
 
-Depending on how you use this site, we may process:
+## 2. Information collected
 
-- Usage data: pages viewed, referrer, browser, device type, and approximate
-  region.
-- Technical data: IP address, user agent, and performance/error logs.
-- Information you provide directly: email or message content when you contact us.
-- Comment data (if enabled): profile and comment metadata handled by
-  **[COMMENT_PROVIDER, e.g., Giscus/GitHub]**.
+The site does not use first-party analytics, advertising trackers, a newsletter,
+payments, or a server-side contact form.
 
-## 3. How we use information
+Information may still be processed in the following situations:
 
-We use data to:
+- **Hosting and security logs.** The site is hosted through GitHub Pages.
+  GitHub logs visitors’ IP addresses for security purposes. See
+  [GitHub’s Privacy Statement](https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement).
+- **Theme preference.** The site stores your selected light or dark theme in
+  your browser’s local storage. This preference stays on your device and is not
+  sent to me by the site.
+- **Messages you choose to send.** If you contact me by email or WhatsApp, I
+  receive the information you include, such as your name, contact details, and
+  message.
+- **Comments.** Comments are provided through Giscus and GitHub Discussions.
+  When you post a comment, GitHub and Giscus may process your GitHub account
+  information, comment content, and related metadata. Comments may be publicly
+  visible.
 
-- Operate and secure the site.
-- Understand traffic and improve content.
-- Respond to support or contact requests.
-- Prevent abuse, fraud, and malicious activity.
-- Comply with legal obligations.
+## 3. How information is used
+
+Information is used only to:
+
+- operate, secure, and improve the site;
+- remember your theme preference;
+- respond to messages, project enquiries, or professional opportunities;
+- administer and moderate comments; and
+- meet applicable legal obligations or protect against misuse.
 
 ## 4. Cookies and similar technologies
 
-This site may use cookies or local storage for:
+Momentadev does not set first-party analytics or advertising cookies. The only
+site-controlled browser storage is local storage for the theme preference.
 
-- Essential functionality (for example, saving theme preference).
-- Analytics (if enabled).
-- Third-party embeds or comment systems.
+You can remove this preference at any time by clearing this site’s storage in
+your browser. GitHub, Giscus, WhatsApp, Microsoft, or other services you choose
+to open may use their own cookies or similar technologies under their respective
+policies.
 
-You can control cookies through your browser settings. If your region requires
-consent banners, add one and configure it to your legal requirements.
+## 5. Third-party services
 
-## 5. Analytics and third-party services
+The site uses or links to the following services:
 
-We may use third-party processors that collect information under their own
-privacy terms:
+- **GitHub Pages** hosts the site and provides infrastructure-level security
+  logging. Review [GitHub’s Privacy Statement](https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement).
+- **Giscus and GitHub Discussions** provide the comment feature. Comments are
+  governed by [Giscus](https://giscus.app/) and GitHub’s privacy practices.
+- **WhatsApp** opens only when you choose the WhatsApp contact link. Review
+  [WhatsApp’s Privacy Policy](https://www.whatsapp.com/legal/privacy-policy).
+- **Outlook/Microsoft** processes messages you choose to send to the published
+  email address. Review the [Microsoft Privacy Statement](https://www.microsoft.com/en-us/privacy/privacystatement).
 
-- Hosting/CDN: **[HOSTING_PROVIDER]**
-- Analytics: **[ANALYTICS_PROVIDER or "Not used"]**
-- Comments: **[COMMENT_PROVIDER or "Not used"]**
-- Email/newsletter: **[EMAIL_PROVIDER or "Not used"]**
+I do not control these services’ data practices. Please review their policies
+before using them.
 
-Please review each provider's privacy policy before using related features.
+## 6. Legal basis (EEA/UK visitors)
 
-## 6. Legal basis (EEA/UK, if applicable)
-
-If GDPR or UK GDPR applies, we process data based on one or more of:
-
-- Consent
-- Legitimate interests
-- Contract performance
-- Legal obligation
-
-Specify the legal basis in your data inventory for each processing activity.
+Where the GDPR or UK GDPR applies, processing is based on legitimate interests
+in operating a secure portfolio and responding to professional enquiries; on
+your consent where you choose to use optional features; and, where necessary,
+on compliance with legal obligations.
 
 ## 7. Data retention
 
-We retain data only as long as needed for the purposes above, including
-security and legal compliance.
+I keep personal information only for as long as reasonably necessary for the
+purpose for which it was provided, such as responding to an enquiry or managing
+an ongoing professional relationship, unless a longer period is required by law.
 
-- Analytics data retention: **[RETENTION_PERIOD]**
-- Contact messages retention: **[RETENTION_PERIOD]**
-- Server logs retention: **[RETENTION_PERIOD]**
+The site does not retain your theme preference on its servers. Hosting logs,
+comment data, and data submitted through third-party services are retained under
+the relevant provider’s policies.
 
 ## 8. International transfers
 
-If your providers process data outside your country, data transfer safeguards
-may apply (for example, Standard Contractual Clauses).
+GitHub, Giscus, WhatsApp, Microsoft, and their service providers may process
+information in countries other than yours. These services handle international
+transfers under their own privacy terms and applicable safeguards.
 
 ## 9. Your privacy rights
 
-Depending on your location, you may have rights to access, correct, delete,
-restrict, or object to processing of your personal data.
+Depending on where you live, you may have rights to request access to,
+correction of, deletion of, restriction of, or objection to processing of your
+personal information. You may also have a right to withdraw consent where
+processing relies on it.
 
-To make a request, contact: **[PRIVACY_CONTACT_EMAIL]**
-
-If you are in the EEA/UK, you may also lodge a complaint with your local data
+To make a request about information I hold, email
+[moamen.khadra@outlook.com](mailto:moamen.khadra@outlook.com). Requests about
+GitHub Pages, Giscus, WhatsApp, or Microsoft data should be directed to the
+relevant provider. EEA/UK visitors may also complain to their local data
 protection authority.
 
-## 10. Children's privacy
+## 10. Children’s privacy
 
-This site is not directed to children under **[MINIMUM_AGE, e.g., 13 or 16]**.
-We do not knowingly collect personal data from children.
+The site is not directed to children under 13, and I do not knowingly collect
+personal information from children.
 
 ## 11. Security
 
-We use reasonable technical and organizational safeguards, but no method of
-transmission or storage is 100% secure.
+Reasonable technical and organizational measures are used to protect information
+under my control. No internet transmission or storage system is completely
+secure, so absolute security cannot be guaranteed.
 
 ## 12. Changes to this policy
 
-We may update this Privacy Policy from time to time. Changes are effective when
-posted on this page with an updated "Last updated" date.
+I may update this policy when the site or its data practices change. The updated
+version will be posted here with a revised “Last updated” date.
 
 ## 13. Contact
 
-For privacy questions, contact:
+For privacy questions or requests, contact:
 
-- Name: **[PRIVACY_CONTACT_NAME]**
-- Email: **[PRIVACY_CONTACT_EMAIL]**
-- Address (optional): **[POSTAL_ADDRESS]**
+- **Moamen Khadra**
+- [moamen.khadra@outlook.com](mailto:moamen.khadra@outlook.com)
+
+This policy is provided for general information and is not legal advice.

@@ -5,8 +5,9 @@ pubDate: 2026-05-03
 tags: [getting-started, tutorial]
 categories: [Guide]
 translationKey: getting-started
-pinned: true
+pinned: false
 toc: true
+draft: true
 ---
 
 Welcome to your new blog! This sample post walks you through the basics of using **Chirping Astro**.

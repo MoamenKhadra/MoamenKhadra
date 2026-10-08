@@ -1,7 +1,6 @@
 import process from 'node:process';
 import avatarImg from './assets/images/site/moamen_khadra.jpeg';
 import ogDefaultImg from './assets/images/site/og-default.svg';
-import type { UIKey } from './i18n/ui';
 import type { GiscusConfig, NavItem, SiteConfig, SocialLink } from './types/config';
 
 /**
@@ -43,10 +42,10 @@ export const CONTACT = {
   whatsapp: 'https://wa.me/201069213448',
   email: 'moamen.khadra@outlook.com',
   linkedin: 'https://www.linkedin.com/in/moamen-khadra',
-  github: 'https://github.com/MomenGit',
-  instagram: 'https://www.instagram.com/_momentadev/',
-  x: 'https://x.com/momentadev',
-  youtube: 'https://youtube.com/@momentadev',
+  github: 'https://github.com/MoamenKhadra',
+  instagram: 'https://www.instagram.com/moamenkhadra/',
+  x: 'https://x.com/moamenkhadra',
+  youtube: 'https://youtube.com/@moamen-khadra',
   /** Short location shown on the resume header and home hero. */
   location: 'Alexandria, Egypt',
 } as const;
@@ -69,7 +68,7 @@ export const SITE: SiteConfig = {
   // ==========================================
 
   /** Default site title used as homepage <title> and meta. */
-  title: 'Momentadev',
+  title: 'Moamen Khadra',
   /** Site tagline / description. */
   description:
     'Portfolio of Moamen Khadra, a software engineer building scalable APIs and data-driven web apps with Python, TypeScript, .NET, and Angular.',
@@ -111,7 +110,7 @@ export const SITE: SiteConfig = {
     /** Whether to show the Privacy Policy link in the footer. */
     showPrivacyPolicy: true,
     /** Whether to show theme credits in the footer right side. Theme <themeName> */
-    showThemeCredits: true,
+    showThemeCredits: false,
     /** Label for the theme repository link in the right footer line. */
     themeName: 'Chirping Astro',
     /** Default upstream theme repository. */
@@ -137,20 +136,17 @@ export const SITE: SiteConfig = {
 export const NAV: readonly NavItem[] = [
   { key: 'home', href: '/', icon: 'lucide:home' },
   { key: 'projects', href: '/projects', icon: 'lucide:briefcase' },
+  { key: 'blog', href: '/blog', icon: 'lucide:newspaper' },
   { key: 'resume', href: '/resume', icon: 'lucide:file-text' },
   { key: 'about', href: '/about', icon: 'lucide:info' },
-  { key: 'blog', href: '/blog', icon: 'lucide:newspaper' },
 ] as const;
 
 /**
- * Hero marketing stats shown on the home page. `labelKey` points at an
- * i18n entry so numbers stay literal while labels translate.
+ * Start date for the home page "years of experience" stat (first
+ * employment per the resume). Parsed as UTC; the years are computed
+ * against the build date.
  */
-export const HERO_STATS: readonly { value: string; labelKey: UIKey }[] = [
-  { value: '5+', labelKey: 'home.statsProjects' },
-  { value: '3+', labelKey: 'home.statsYears' },
-  { value: '20+', labelKey: 'home.statsTech' },
-] as const;
+export const EXPERIENCE_START = '2023-04-01';
 
 /** Core-stack chips rendered under the home hero. */
 export const HERO_SKILLS: readonly string[] = [

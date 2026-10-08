@@ -1,33 +1,71 @@
 ---
 /**
- * Right-hand panel shown on XL screens, mirrors Chirpy's "Recently Updated"
- * + "Trending Tags" widgets.
+ * Right-hand panel shown on XL screens.
  *
- * On post pages we replace this with the article TOC (handled by PostLayout).
+ * variant="posts"     — Chirpy's "Recently Updated" + "Trending Tags"
+ *                       (blog listing pages).
+ * variant="projects"  — "Recent Projects" + "Tech Stack" chips
+ *                       (projects listing page).
+ *
+ * On post pages this is not shown at all — the article TOC takes the rail
+ * (handled by PostLayout via the `aside-bottom` slot).
  */
 import type { Locale } from '../config';
 import { useTranslations } from '../i18n/utils';
 import { getPosts, getTagsWithCount, postPath, tagPath } from '../utils/posts';
+import { getProjects, projectPath } from '../utils/projects';
 
 interface Props {
   locale: Locale;
+  variant: 'posts' | 'projects';
 }
 
-const { locale } = Astro.props;
+const { locale, variant } = Astro.props;
 const t = useTranslations(locale);
 
-const [posts, tags] = await Promise.all([getPosts(locale), getTagsWithCount(locale)]);
+const recentValue = (entry: { data: { updatedDate?: Date; pubDate?: Date } }) =>
+  (entry.data.updatedDate ?? entry.data.pubDate)?.valueOf?.() ?? 0;
 
-const recent = posts
-  .slice()
-  .sort((a, b) => {
-    const at = (a.data.updatedDate ?? a.data.pubDate)?.valueOf?.() ?? 0;
-    const bt = (b.data.updatedDate ?? b.data.pubDate)?.valueOf?.() ?? 0;
-    return bt - at;
-  })
-  .slice(0, 5);
+let recent: Array<{ href: string; title: string }>;
+let chips: Array<{ label: string; href?: string }>;
+let recentTitle: string;
+let chipsTitle: string;
 
-const trending = tags.slice(0, 8);
+if (variant === 'posts') {
+  const [posts, tags] = await Promise.all([getPosts(locale), getTagsWithCount(locale)]);
+
+  recent = posts
+    .slice()
+    .sort((a, b) => recentValue(b) - recentValue(a))
+    .slice(0, 5)
+    .map((post) => ({ href: postPath(post), title: post.data.title }));
+
+  chips = tags.slice(0, 8).map((tag) => ({ label: tag.name, href: tagPath(locale, tag.name) }));
+  recentTitle = t('panel.recentlyUpdated');
+  chipsTitle = t('panel.trendingTags');
+} else {
+  const projects = await getProjects(locale);
+
+  recent = projects
+    .slice()
+    .sort((a, b) => recentValue(b) - recentValue(a))
+    .slice(0, 5)
+    .map((project) => ({ href: projectPath(project), title: project.data.title }));
+
+  // Aggregate tech usage across projects, most frequent first.
+  const techCount = new Map<string, number>();
+  for (const project of projects) {
+    for (const tech of project.data.tech) {
+      techCount.set(tech, (techCount.get(tech) ?? 0) + 1);
+    }
+  }
+  chips = [...techCount.entries()]
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .slice(0, 8)
+    .map(([label]) => ({ label }));
+  recentTitle = t('panel.recentProjects');
+  chipsTitle = t('panel.techTags');
+}
 ---
 
 <div class="chirpy-panel">
@@ -35,13 +73,13 @@ const trending = tags.slice(0, 8);
     recent.length > 0 && (
       <section class="mb-8">
         <h2 class="text-base-content/70 mb-3 text-xs font-bold tracking-[0.1em] uppercase">
-          {t('panel.recentlyUpdated')}
+          {recentTitle}
         </h2>
         <ul class="chirpy-aside-list">
-          {recent.map((post) => (
+          {recent.map((item) => (
             <li>
-              <a href={postPath(post)} class="chirpy-aside-item truncate">
-                {post.data.title}
+              <a href={item.href} class="chirpy-aside-item truncate">
+                {item.title}
               </a>
             </li>
           ))}
@@ -51,17 +89,21 @@ const trending = tags.slice(0, 8);
   }
 
   {
-    trending.length > 0 && (
+    chips.length > 0 && (
       <section>
         <h2 class="text-base-content/70 mb-3 text-xs font-bold tracking-[0.1em] uppercase">
-          {t('panel.trendingTags')}
+          {chipsTitle}
         </h2>
         <div class="flex flex-wrap gap-2">
-          {trending.map((tag) => (
-            <a href={tagPath(locale, tag.name)} class="post-tag">
-              {tag.name}
-            </a>
-          ))}
+          {chips.map((chip) =>
+            chip.href ? (
+              <a href={chip.href} class="post-tag">
+                {chip.label}
+              </a>
+            ) : (
+              <span class="badge badge-outline badge-sm">{chip.label}</span>
+            ),
+          )}
         </div>
       </section>
     )

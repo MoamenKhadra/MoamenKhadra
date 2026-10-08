@@ -60,7 +60,7 @@ describe('projectPath', () => {
 });
 
 describe('sortProjects', () => {
-  test('featured first, then newest first', () => {
+  test('newest first regardless of featured', () => {
     const list = [
       fakeProject('en/old-plain.md', { pubDate: new Date('2025-01-01') }),
       fakeProject('en/new-featured.md', { featured: true, pubDate: new Date('2026-01-01') }),
@@ -68,10 +68,10 @@ describe('sortProjects', () => {
       fakeProject('en/new-plain.md', { pubDate: new Date('2026-06-01') }),
     ];
     expect(sortProjects(list).map((p) => p.id)).toEqual([
-      'en/new-featured.md',
-      'en/old-featured.md',
       'en/new-plain.md',
+      'en/new-featured.md',
       'en/old-plain.md',
+      'en/old-featured.md',
     ]);
   });
 

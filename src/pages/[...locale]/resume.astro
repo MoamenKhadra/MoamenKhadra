@@ -1,8 +1,9 @@
 ---
 /**
- * /resume — structured resume: summary, skills, experience, education,
- * leadership, languages. A "Print / Save as PDF" button triggers the
- * browser print dialog; @media print styles keep the output clean.
+ * /resume — structured resume: summary, skills, experience, training,
+ * education, leadership, languages. A "Print / Save as PDF" button
+ * triggers the browser print dialog; @media print styles keep the
+ * output clean.
  */
 import BaseLayout from '~/layouts/BaseLayout.astro';
 import { CONTACT, SITE } from '~/config';
@@ -142,6 +143,51 @@ const contactChips = [
         }
       </ol>
     </section>
+
+    {/* Training & internships */}
+    {
+      resume.training.length > 0 && (
+        <section class="mb-8">
+          <h2 class="border-base-300 text-xl font-bold tracking-tight border-b pb-2">
+            {t('resume.training')}
+          </h2>
+          <ol class="mt-4 space-y-6">
+            {
+              resume.training.map((entry) => (
+                <li class="relative border-base-300 border-s-2 ps-5">
+                  <span class="bg-primary absolute -start-[5px] top-1.5 block h-2 w-2 rounded-full" />
+                  <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                    <h3 class="text-base-content font-semibold">
+                      {entry.orgUrl ? (
+                        <a
+                          href={entry.orgUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          class="link-hover text-primary"
+                        >
+                          {entry.org}
+                        </a>
+                      ) : (
+                        entry.org
+                      )}
+                    </h3>
+                    <span class="text-base-content/60 text-sm font-medium">{entry.period}</span>
+                  </div>
+                  <p class="text-base-content/70 text-sm italic">
+                    {entry.role} · {entry.location}
+                  </p>
+                  <ul class="text-base-content/80 mt-2 list-disc space-y-1.5 ps-5 text-sm leading-relaxed">
+                    {entry.bullets.map((bullet) => (
+                      <li>{bullet}</li>
+                    ))}
+                  </ul>
+                </li>
+              ))
+            }
+          </ol>
+        </section>
+      )
+    }
 
     {/* Education */}
     <section class="mb-8">

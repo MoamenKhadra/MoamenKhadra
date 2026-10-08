@@ -2,10 +2,8 @@
 title: Momentadev Portfolio
 description: A multilingual developer portfolio built with Astro, Tailwind CSS v4, and daisyUI — with full RTL support, automatic OG image generation, and Pagefind search.
 pubDate: 2026-09-20
-heroImage: ../../../assets/images/projects/placeholder-thumbnail.png
-heroImageAlt: Momentadev portfolio website screenshot
 tech: [Astro, TypeScript, Tailwind CSS, daisyUI, Pagefind]
-featured: true
+featured: false
 ---
 
 The site you are looking at right now. I wanted a personal home on the

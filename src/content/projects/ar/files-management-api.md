@@ -2,12 +2,10 @@
 title: واجهة إدارة الملفات البرمجية
 description: واجهة برمجية لتخزين الملفات مع مصادقة رموز ورفع وعرض وإدارة أذونات — مع تخزين مؤقت عبر Redis لأداء أفضل، مبنية على Node.js وExpress.
 pubDate: 2024-03-15
-heroImage: ../../../assets/images/projects/placeholder-thumbnail.png
-heroImageAlt: مسار طلبات واجهة إدارة الملفات البرمجية
 tech: [Node.js, Express, MongoDB, Redis]
 links:
-  repo: https://github.com/MomenGit/alx-files_manager
-featured: true
+  repo: https://github.com/MoamenKhadra/alx-files_manager
+featured: false
 ---
 
 واجهة برمجية لتخزين الملفات تتولّى المصادقة والرفع والعرض وإدارة

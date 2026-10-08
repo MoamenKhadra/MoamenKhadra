@@ -299,7 +299,7 @@ html[dir='rtl'] body::before {
      so the controls aren't flush against the browser chrome on either
      mobile or desktop. */
   .chirpy-topbar {
-    @apply bg-base-200/80 supports-backdrop-filter:bg-base-200/70 sticky top-0 z-30 flex min-h-(--height-topbar) items-center justify-between gap-3 py-2 backdrop-blur sm:py-3;
+    @apply bg-base-200/80 supports-backdrop-filter:bg-base-200/70 sticky top-0 z-30 flex min-h-(--height-topbar) items-center justify-between gap-3 py-2 backdrop-blur-xs sm:py-3;
   }
 
   /* Right rail wrapper. Holds the global Panel widget followed by an
@@ -443,6 +443,7 @@ html[dir='rtl'] body::before {
     grid-template-columns: minmax(0, 1fr);
   }
   .chirpy-card--vertical .chirpy-card-image-wrap {
+    position: relative;
     order: 0;
     display: block;
     grid-column: auto;
@@ -458,6 +459,32 @@ html[dir='rtl'] body::before {
   @media (min-width: 768px) {
     .chirpy-card--vertical .chirpy-card-image {
       height: 16rem;
+    }
+  }
+
+  /* Repo/demo pills pinned to the thumbnail corners (inline-start /
+     inline-end so RTL flips them). z-index 10 keeps them clickable
+     above the card-wide title-link overlay; the bar itself ignores
+     pointer events so only the pills receive clicks. */
+  .chirpy-card--vertical .chirpy-card-corner-links {
+    @apply pointer-events-none absolute top-2 start-2 end-2 z-10 flex items-start justify-between gap-2;
+  }
+  .chirpy-card--vertical .chirpy-card-corner-link {
+    @apply border-base-300/70 bg-base-100/85 text-base-content/80 pointer-events-auto inline-flex items-center gap-1 rounded-full border px-2 py-1 text-xs font-medium backdrop-blur-sm transition;
+  }
+  .chirpy-card--vertical .chirpy-card-corner-link:hover {
+    @apply text-primary border-primary;
+  }
+
+  /* Titles always occupy two lines (mobile: text-2xl, sm+: 1.55rem;
+     leading-snug = 1.375) so description + tags start at the same
+     offset and every card shares identical proportions. */
+  .chirpy-card--vertical .chirpy-card-title {
+    min-height: calc(2 * 1.5rem * 1.375);
+  }
+  @media (min-width: 640px) {
+    .chirpy-card--vertical .chirpy-card-title {
+      min-height: calc(2 * 1.55rem * 1.375);
     }
   }
 
@@ -899,4 +926,26 @@ html[dir='rtl'] body::before {
 [data-search-input]::-webkit-search-decoration {
   -webkit-appearance: none;
   appearance: none;
+}
+
+/* --------------------------------------------------------------------------
+ * Fixed card thumbnail heights — MUST stay UNLAYERED.
+ *
+ * Astro injects `@layer astro.images { :where([data-astro-image]){height:auto} … }`
+ * after Tailwind's layers, so it beats every layered height rule (components /
+ * utilities) regardless of specificity. Unlayered rules outrank all layers,
+ * which is the only way to pin these heights and keep card thumbnails uniform.
+ * -------------------------------------------------------------------------- */
+@media (max-width: 767px) {
+  /* All cards on mobile: image on top, fixed 11rem (blog + projects). */
+  img.chirpy-card-image {
+    height: calc(var(--spacing) * 44);
+  }
+}
+@media (min-width: 768px) {
+  /* Project cards stay vertical with a fixed 16rem thumbnail; blog cards
+     keep their horizontal flex-fill layout (no fixed height). */
+  .chirpy-card--vertical img.chirpy-card-image {
+    height: 16rem;
+  }
 }

@@ -2,12 +2,10 @@
 title: Qwizyo API
 description: Backend for a quiz management platform — RESTful APIs for users, groups, assignments, and quizzes with role-based access control, built with Python and Flask.
 pubDate: 2024-04-15
-heroImage: ../../../assets/images/projects/placeholder-thumbnail.png
-heroImageAlt: Qwizyo API architecture diagram
 tech: [Python, Flask, MongoDB, REST API]
 links:
-  repo: https://github.com/MomenGit/qwizyo-api
-featured: true
+  repo: https://github.com/MoamenKhadra/qwizyo-api
+featured: false
 ---
 
 The backend for a quiz management platform, exposing RESTful APIs that
