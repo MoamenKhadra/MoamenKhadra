@@ -7,10 +7,6 @@ heroImageAlt: AtUrHome dispatch dashboard listing shipments and drivers
 tech: [React, Vite, TypeScript, Supabase, Tailwind CSS]
 links:
   demo: https://www.aturhome.sa
-caseStudy:
-  label: Last-mile logistics operation
-  problem: Shipments, drivers, cash collection, and merchant follow-up were spread across spreadsheets and phone calls.
-  result: One role-based operations platform for the shipment lifecycle, collection, and merchant self-service.
 featured: true
 ---
 

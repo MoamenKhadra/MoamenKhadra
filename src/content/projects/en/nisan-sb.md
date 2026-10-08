@@ -7,6 +7,10 @@ heroImageAlt: Nisan Scientific Bureau hero with partner call to action
 tech: [HTML, Bootstrap 5, jQuery, Owl Carousel, PHP]
 links:
   demo: https://nisansb.com/
+caseStudy:
+  label: Bilingual healthcare website
+  problem: Operating since 2017 with no web presence — overseas manufacturers had nothing to read before a first call, and the company profile lived only in a PDF.
+  result: A bilingual EN/AR one-page site — services, coverage map, partners, and team in a single scroll, with inquiries landing in a real inbox and WhatsApp.
 featured: true
 ---
 

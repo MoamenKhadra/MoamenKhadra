@@ -7,10 +7,6 @@ heroImageAlt: لوحة شحنات وسائقين في منصة عند بيتك
 tech: [React, Vite, TypeScript, Supabase, Tailwind CSS]
 links:
   demo: https://www.aturhome.sa
-caseStudy:
-  label: عملية توصيل في الميل الأخير
-  problem: كانت الشحنات والسائقون والتحصيل النقدي ومتابعة التجار موزعة بين جداول ومكالمات هاتفية.
-  result: منصة عمليات واحدة تعتمد على الصلاحيات لدورة الشحنة والتحصيل والخدمة الذاتية للتاجر.
 featured: true
 ---
 
