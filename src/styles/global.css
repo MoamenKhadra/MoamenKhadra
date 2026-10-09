@@ -978,3 +978,15 @@ html[dir='rtl'] body::before {
     height: 16rem;
   }
 }
+
+/* Home case-study card image — fixed 11rem mobile / 16rem ≥768px (matches the
+   project grid). Astro's `@layer astro.images` `height:auto` beats layered
+   utilities like `h-52`, so this must stay unlayered. */
+.case-study-image {
+  height: calc(var(--spacing) * 44);
+}
+@media (min-width: 768px) {
+  .case-study-image {
+    height: 16rem;
+  }
+}

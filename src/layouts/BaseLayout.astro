@@ -7,19 +7,21 @@ import Topbar from '../components/Topbar.astro';
 import Footer from '../components/Footer.astro';
 import Panel from '../components/Panel.astro';
 import SEO from '../components/SEO.astro';
+import JsonLd from '../components/JsonLd.astro';
 import BackToTop from '../components/islands/BackToTop.astro';
 import { ClientRouter } from 'astro:transitions';
 import faviconImg from '../assets/images/site/favicon.ico';
-import type { Locale } from '../config';
+import { SITE, type Locale } from '../config';
 import {
   detectLocale,
-  htmlDir,
   htmlLang,
+  htmlDir,
   useTranslations,
   stripLocale,
   withBase,
 } from '../i18n/utils';
 import { buildSeo, type SeoMeta } from '../utils/seo';
+import { breadcrumbJsonLd, personJsonLd, websiteJsonLd } from '../utils/jsonld';
 
 interface Props {
   title?: string;
@@ -44,6 +46,8 @@ interface Props {
   crumbs?: Array<{ label: string; href?: string }>;
   /** Pre-built SEO meta override. */
   seo?: SeoMeta;
+  /** Page-specific JSON-LD block(s) merged with the sitewide nodes. */
+  jsonld?: Array<Record<string, unknown>>;
   /**
    * Locales for which a translation of the current page actually
    * exists. Used to limit the language switcher to working links and
@@ -64,6 +68,7 @@ const {
   narrow = false,
   crumbs = [],
   seo,
+  jsonld,
   availableLocales,
 } = Astro.props;
 
@@ -88,6 +93,28 @@ const meta: SeoMeta =
     tags,
     availableLocales,
   });
+
+// Structured data: sitewide WebSite + Person, plus the page's own block
+// (BlogPosting / CreativeWork) and breadcrumbs when the page declares them.
+// Crumbs without an href are the current page — only the last one gets the
+// canonical URL; middle items without a link are dropped (never invent URLs).
+const breadcrumbItems = crumbs
+  .map((crumb, i) => ({
+    name: crumb.label,
+    url: crumb.href
+      ? new URL(crumb.href, SITE.url).toString()
+      : i === crumbs.length - 1
+        ? meta.canonical
+        : undefined,
+  }))
+  .filter((item): item is { name: string; url: string } => Boolean(item.url));
+const breadcrumb = breadcrumbJsonLd(breadcrumbItems);
+const jsonLdBlocks = [
+  websiteJsonLd(locale),
+  personJsonLd(),
+  ...(jsonld ?? []),
+  ...(breadcrumb ? [breadcrumb] : []),
+];
 ---
 
 <!doctype html>
@@ -102,6 +129,10 @@ const meta: SeoMeta =
     <link rel="icon" href={withBase(faviconImg)} />
     {/* Feed auto-discovery (<link rel="alternate">) is rendered by <SEO>. */}
     <SEO meta={meta} />
+    {SITE.googleSiteVerification && (
+      <meta name="google-site-verification" content={SITE.googleSiteVerification} />
+    )}
+    <JsonLd data={jsonLdBlocks} />
     {/* Custom fonts configured via Astro Fonts API */}
     <Font cssVariable="--font-source-sans-3" />
     <Font cssVariable="--font-alexandria" />

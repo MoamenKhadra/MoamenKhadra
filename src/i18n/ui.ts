@@ -11,6 +11,8 @@ export const messages = {
     'site.skipToContent': 'Skip to content',
     'site.authorName': 'Moamen Khadra',
     'site.authorBio': 'Software Engineer',
+    'site.metaDescription':
+      'Portfolio of Moamen Khadra, a software engineer building scalable APIs and data-driven web apps with Python, TypeScript, .NET, and Angular.',
     'nav.home': 'Home',
     'nav.blog': 'Blog',
     'nav.projects': 'Projects',
@@ -188,6 +190,8 @@ export const messages = {
     'site.skipToContent': 'تخطَّ إلى المحتوى',
     'site.authorName': 'مؤمن خضرة',
     'site.authorBio': 'مهندس برمجيات',
+    'site.metaDescription':
+      'معرض أعمال مؤمن خضرة، مهندس برمجيات يبني واجهات برمجية قابلة للتوسع وتطبيقات ويب تعتمد على البيانات باستخدام Python وTypeScript و.NET وAngular.',
     'nav.home': 'الرئيسية',
     'nav.blog': 'المدونة',
     'nav.projects': 'المشاريع',

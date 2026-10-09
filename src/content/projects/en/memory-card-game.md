@@ -8,7 +8,7 @@ tech: [Angular, TypeScript, Tailwind CSS, RxJS, PokéAPI]
 links:
   repo: https://github.com/MoamenKhadra/memory-card
   demo: https://momentadev-memory-card.vercel.app/
-featured: true
+featured: false
 ---
 
 A web-based Pokémon memory card game with a responsive UI and live API

@@ -1,0 +1,23 @@
+---
+/**
+ * Emits structured data as an inline JSON-LD <script>.
+ *
+ * Google requires the top-level JSON-LD value to be an object, so a
+ * single block is emitted as-is and multiple blocks are wrapped in
+ * `@graph`. `<` is escaped so content can never terminate the script
+ * element early.
+ */
+interface Props {
+  data: Record<string, unknown> | Array<Record<string, unknown>>;
+}
+
+const { data } = Astro.props as Props;
+const payload = Array.isArray(data)
+  ? data.length === 1
+    ? (data[0] ?? {})
+    : { '@graph': data }
+  : data;
+const json = JSON.stringify(payload ?? {}).replace(/</g, '\\u003c');
+---
+
+<script type="application/ld+json" is:inline set:html={json} />

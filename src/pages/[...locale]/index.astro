@@ -64,7 +64,7 @@ const processSteps = [
 ] as const;
 ---
 
-<BaseLayout title={SITE.title} description={SITE.description} pathWithoutLocale="/">
+<BaseLayout title={SITE.title} pathWithoutLocale="/">
   {/* Hero */}
   <section class="hero bg-base-100 rounded-box border-base-300 mb-10 border py-10 sm:py-14">
     <div class="hero-content text-center">
@@ -175,10 +175,11 @@ const processSteps = [
                           <SmartImage
                             src={projectHeroImage(project)!}
                             alt={project.data.heroImageAlt ?? project.data.title}
-                            class="h-52 w-full object-cover"
-                            loading="lazy"
+                            class="case-study-image w-full object-cover"
+                            loading="eager"
+                            fetchpriority={'high' }
                             widths={[480, 768, 960]}
-                            sizes="(max-width: 1023px) 100vw, 50vw"
+                            sizes="(max-width: 1023px) 100vw, 448px"
                             quality={75}
                           />
                         </div>
@@ -195,7 +196,7 @@ const processSteps = [
                         <p>{project.data.caseStudy.problem}</p>
                         <p class="text-base-content font-medium">{project.data.caseStudy.result}</p>
                       </div>
-                      <div class="card-actions mt-1 flex-wrap gap-3">
+                      <div class="card-actions mt-auto flex-wrap gap-3">
                         <a href={projectPath(project)} class="btn btn-outline btn-sm">
                           {t('home.viewCaseStudy')}
                         </a>

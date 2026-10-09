@@ -7,7 +7,7 @@ heroImageAlt: الصفحة الرئيسية لنيفينز مع فيديو ال�
 tech: [HTML, Tailwind CSS, daisyUI, Vanilla JS]
 links:
   demo: https://neoveins.com
-featured: true
+featured: false
 ---
 
 موقع تعريفي ثابت وثنائي اللغة لشركة NEOVEINS FZCO — شركة حلول

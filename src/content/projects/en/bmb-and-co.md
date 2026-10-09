@@ -5,7 +5,7 @@ pubDate: 2026-06-23
 heroImage: ../../../assets/images/projects/bmbco-thumbnail.png
 heroImageAlt: BMB and Co homepage with services and team sections
 tech: [Angular, SSR, Tailwind CSS, daisyUI, EmailJS]
-featured: true
+featured: false
 ---
 
 The corporate site for BMB & Co, a Saudi accounting, audit, and legal

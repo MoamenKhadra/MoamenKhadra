@@ -20,6 +20,7 @@ import {
   shouldShowHero,
 } from '../utils/posts';
 import { buildSeo } from '../utils/seo';
+import { blogPostingJsonLd } from '../utils/jsonld';
 import type { MarkdownHeading } from 'astro';
 
 interface Props {
@@ -88,6 +89,22 @@ const crumbs = [
   { label: post.data.title },
 ];
 
+// Structured data. Unlisted (noindex) posts stay out of rich results.
+const jsonld = seo.noindex
+  ? []
+  : [
+      blogPostingJsonLd({
+        title: post.data.title,
+        description: post.data.description,
+        canonical: seo.canonical,
+        image: seo.ogImage,
+        published: post.data.pubDate,
+        modified: post.data.updatedDate,
+        tags: post.data.tags,
+        locale,
+      }),
+    ];
+
 let MathStylesComponent;
 if (post.data.math) {
   MathStylesComponent = (await import('../components/MathStyles.astro')).default;
@@ -108,6 +125,7 @@ if (post.data.mermaid) {
   tags={post.data.tags}
   crumbs={crumbs}
   seo={seo}
+  jsonld={jsonld}
   availableLocales={availableLocales}
 >
   {post.data.math && MathStylesComponent && <MathStylesComponent />}

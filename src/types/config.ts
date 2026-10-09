@@ -17,6 +17,8 @@ export interface SiteConfig {
   boxedArticles: boolean;
   dynamicPostCardHeight: boolean;
   autoOgImage: boolean;
+  /** Google Search Console verification token ('' disables the meta tag). */
+  googleSiteVerification: string;
   showPrivacyPolicy: boolean;
   footer: {
     /** Optional full override for the left footer line. Supports {year} and {author}. */

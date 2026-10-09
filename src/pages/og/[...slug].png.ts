@@ -17,7 +17,7 @@ import { generateOgImage } from '../../utils/og-image';
 import { getPosts, postSlug } from '../../utils/posts';
 import { getProjects, projectSlug } from '../../utils/projects';
 import { SITE, type Locale } from '../../config';
-import { formatDate } from '../../i18n/utils';
+import { formatDate, useTranslations } from '../../i18n/utils';
 
 type OgEntry = {
   title: string;
@@ -36,6 +36,20 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
   for (const locale of SITE.locales) {
     const prefix = locale === SITE.defaultLocale ? '' : `${locale}/`;
+
+    // Default site-wide card for pages without a page-specific og:image
+    // (home, listings, about, …). Route: /og/site.png + /og/ar/site.png.
+    paths.push({
+      params: { slug: `${prefix}site` },
+      props: {
+        entry: {
+          title: SITE.title,
+          description: useTranslations(locale)('site.metaDescription'),
+          tags: [],
+          locale,
+        },
+      },
+    });
 
     const posts = await getPosts(locale);
     for (const post of posts) {

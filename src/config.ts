@@ -93,6 +93,15 @@ export const SITE: SiteConfig = {
   dynamicPostCardHeight: false,
   /** Automatically generate Open Graph images for posts that don't have a `heroImage`. */
   autoOgImage: true,
+  /**
+   * Google Search Console verification token (emitted as
+   * `<meta name="google-site-verification">` in <head>). Override via the
+   * PUBLIC_GOOGLE_SITE_VERIFICATION env var if the site is ever re-verified
+   * under a different property.
+   */
+  googleSiteVerification:
+    import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION ||
+    'nIV5Ncqo8_lgbiAeSi93oCbX7SM3HWfj2Kx_3mKcTFE',
   /** Show a link to the Privacy Policy page in the footer. */
   showPrivacyPolicy: true,
   /** Footer text/link controls. */
@@ -124,7 +133,7 @@ export const SITE: SiteConfig = {
   /** Public URL of the deployed site, no trailing slash. Breaks SEO/RSS if incorrect. */
   // `||` (not `??`) so an explicitly empty `SITE_URL=` in `.env` also
   // falls back to the default. Astro requires `site` to be a valid URL.
-  url: process.env.SITE_URL || 'https://momengit.github.io',
+  url: process.env.SITE_URL || 'https://moamenkhadra.github.io',
   /** Supported locales. Changing this requires adding/removing locale folders, content, and i18n entries. */
   locales: locales,
   /** Default locale. Changing this is a breaking, atomic, multi-file operation. */

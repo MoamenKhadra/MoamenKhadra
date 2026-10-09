@@ -7,7 +7,7 @@ heroImageAlt: AtUrHome dispatch dashboard listing shipments and drivers
 tech: [React, Vite, TypeScript, Supabase, Tailwind CSS]
 links:
   demo: https://www.aturhome.sa
-featured: true
+featured: false
 ---
 
 AtUrHome ("عند بيتك" — _at your home_) is an Arabic, right-to-left

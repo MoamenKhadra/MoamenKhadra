@@ -11,6 +11,8 @@ import {
   projectHeroImage,
   type Project,
 } from '~/utils/projects';
+import { buildSeo } from '~/utils/seo';
+import { creativeWorkJsonLd } from '~/utils/jsonld';
 import { Icon } from 'astro-icon/components';
 
 interface Props {
@@ -59,17 +61,38 @@ const ogPrefix = locale === SITE.defaultLocale ? '' : `${locale}/`;
 const generatedOgPath = `/og/${ogPrefix}projects/${ogSlug}.png`;
 const skipAutoOg = !SITE.autoOgImage || import.meta.env.CI_SKIP_AUTO_OG_IMAGE === 'true';
 const ogImage = heroSrc ?? (skipAutoOg ? undefined : generatedOgPath);
+
+const pathWithoutLocale = `/projects/${projectSlug(project)}/`;
+const seo = buildSeo({
+  title: `${project.data.title} (${t('nav.projects')})`,
+  description: project.data.description,
+  pathWithoutLocale,
+  fullPath: Astro.url.pathname,
+  locale,
+  ogImage,
+  availableLocales,
+});
+const jsonld = [
+  creativeWorkJsonLd({
+    title: project.data.title,
+    description: project.data.description,
+    canonical: seo.canonical,
+    image: seo.ogImage,
+    dateCreated: project.data.pubDate,
+    keywords: project.data.tech,
+    locale,
+  }),
+];
 ---
 
 <BaseLayout
-  title={`${project.data.title} (${t('nav.projects')})`}
-  description={project.data.description}
-  pathWithoutLocale={`/projects/${projectSlug(project)}/`}
-  ogImage={ogImage}
+  pathWithoutLocale={pathWithoutLocale}
   crumbs={[
     { label: t('nav.projects'), href: localizedPath('/projects/', locale) },
     { label: project.data.title },
   ]}
+  seo={seo}
+  jsonld={jsonld}
   availableLocales={availableLocales}
 >
   <article class="px-1 py-6 sm:px-2 sm:py-8">

@@ -6,7 +6,7 @@ import tailwindcss from '@tailwindcss/vite';
 import expressiveCode from 'astro-expressive-code';
 import icon from 'astro-icon';
 import { defineConfig, fontProviders, svgoOptimizer } from 'astro/config';
-import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
@@ -103,6 +103,31 @@ function rewriteSitemapXslToRelative() {
           );
           if (fixed !== xml) writeFileSync(path, fixed);
         }
+      },
+    },
+  };
+}
+
+/**
+ * `public/robots.txt` ships a relative `Sitemap:` line, but the directive
+ * MUST be an absolute URL. Rewrite it after the build using the same
+ * `site` value Astro writes into the sitemap (honours the SITE_URL env).
+ * When the sitemap integration is skipped (CI fast mode) the line is
+ * removed entirely so robots.txt never advertises a 404.
+ */
+function rewriteRobotsSitemapUrl() {
+  return {
+    name: 'chirpy:rewrite-robots-sitemap',
+    hooks: {
+      'astro:build:done': (/** @type {{ dir: URL }} */ { dir }) => {
+        const path = join(fileURLToPath(dir), 'robots.txt');
+        if (!existsSync(path)) return;
+        const txt = readFileSync(path, 'utf8');
+        const siteUrl = String(SITE.url).replace(/\/$/, '');
+        const updated = SKIP_RSS_SITEMAP
+          ? txt.replace(/^Sitemap:.*\n?/m, '')
+          : txt.replace(/^Sitemap:.*$/m, `Sitemap: ${siteUrl}/sitemap-index.xml`);
+        if (updated !== txt) writeFileSync(path, updated);
       },
     },
   };
@@ -257,6 +282,7 @@ export default defineConfig({
           }),
           rewriteSitemapXslToRelative(),
         ]),
+    rewriteRobotsSitemapUrl(),
   ],
 
   vite: {

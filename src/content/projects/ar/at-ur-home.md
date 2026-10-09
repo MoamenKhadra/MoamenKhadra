@@ -7,7 +7,7 @@ heroImageAlt: لوحة شحنات وسائقين في منصة عند بيتك
 tech: [React, Vite, TypeScript, Supabase, Tailwind CSS]
 links:
   demo: https://www.aturhome.sa
-featured: true
+featured: false
 ---
 
 "عند بيتك" منصة عربية باتجاه من اليمين إلى اليسار لإدارة توصيل

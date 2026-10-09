@@ -5,7 +5,7 @@ pubDate: 2026-06-23
 heroImage: ../../../assets/images/projects/bmbco-thumbnail.png
 heroImageAlt: الصفحة الرئيسية لشركة BMB مع قسم الخدمات والفريق
 tech: [Angular, SSR, Tailwind CSS, daisyUI, EmailJS]
-featured: true
+featured: false
 ---
 
 موقع شركة BMB & Co، شركة سعودية للاستشارات المحاسبية والمراجعة

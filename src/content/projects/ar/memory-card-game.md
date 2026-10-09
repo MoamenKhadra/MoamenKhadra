@@ -8,7 +8,7 @@ tech: [Angular, TypeScript, Tailwind CSS, RxJS, PokéAPI]
 links:
   repo: https://github.com/MoamenKhadra/memory-card
   demo: https://momentadev-memory-card.vercel.app/
-featured: true
+featured: false
 ---
 
 لعبة ذاكرة بطاقات بتيمز Pokémon بواجهة متجاوبة وتكامل مباشر مع واجهة

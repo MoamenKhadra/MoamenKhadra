@@ -7,7 +7,7 @@ heroImageAlt: Neoveins homepage hero with background video and solution cards
 tech: [HTML, Tailwind CSS, daisyUI, Vanilla JS]
 links:
   demo: https://neoveins.com
-featured: true
+featured: false
 ---
 
 A static, bilingual marketing site for NEOVEINS FZCO — a software
