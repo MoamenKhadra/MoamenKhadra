@@ -10,10 +10,39 @@
 @plugin 'daisyui' {
   themes:
     lofi --default,
-    black --prefersdark;
   logs: false;
 }
 
+@plugin 'daisyui/theme' {
+  name: 'lofi';
+  default: true;
+  prefersdark: false;
+  color-scheme: light;
+}
+
+@plugin 'daisyui/theme' {
+  name: 'black';
+  prefersdark: false;
+  color-scheme: dark;
+  /* Brand + status colors borrowed from daisyUI's `forest` theme
+     (black's own primary/secondary/accent/neutral are grayscale). */
+  --color-primary: oklch(68.628% 0.185 148.958);
+  --color-primary-content: oklch(0% 0 0);
+  --color-secondary: oklch(69.776% 0.135 168.327);
+  --color-secondary-content: oklch(13.955% 0.027 168.327);
+  --color-accent: oklch(70.628% 0.119 185.713);
+  --color-accent-content: oklch(14.125% 0.023 185.713);
+  --color-neutral: oklch(30.698% 0.039 171.364);
+  --color-neutral-content: oklch(86.139% 0.007 171.364);
+  --color-info: oklch(72.06% 0.191 231.6);
+  --color-info-content: oklch(0% 0 0);
+  --color-success: oklch(64.8% 0.15 160);
+  --color-success-content: oklch(0% 0 0);
+  --color-warning: oklch(84.71% 0.199 83.87);
+  --color-warning-content: oklch(0% 0 0);
+  --color-error: oklch(71.76% 0.221 22.18);
+  --color-error-content: oklch(0% 0 0);
+}
 /* ---------- Alert plugin safelist ---------- */
 /* Force Tailwind to emit classes used by the remark-alert plugin, which
    generates raw HTML that the content scanner may not see at build time. */
