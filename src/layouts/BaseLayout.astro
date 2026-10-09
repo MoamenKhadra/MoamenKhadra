@@ -10,7 +10,8 @@ import SEO from '../components/SEO.astro';
 import JsonLd from '../components/JsonLd.astro';
 import BackToTop from '../components/islands/BackToTop.astro';
 import { ClientRouter } from 'astro:transitions';
-import faviconImg from '../assets/images/site/favicon.ico';
+import faviconImg from '../assets/images/site/favicon.svg';
+import faviconIco from '../assets/images/site/favicon.ico';
 import { SITE, type Locale } from '../config';
 import {
   detectLocale,
@@ -125,8 +126,9 @@ const jsonLdBlocks = [
     <meta name="generator" content={Astro.generator} />
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f5f5f5" />
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#141414" />
-    {/* `.ico` isn't processed by the image pipeline — the import IS the URL string. */}
-    <link rel="icon" href={withBase(faviconImg)} />
+    {/* SVG favicon (all modern browsers) + .ico fallback (Safari). */}
+    <link rel="icon" href={withBase(faviconImg.src)} type="image/svg+xml" />
+    <link rel="icon" href={withBase(faviconIco)} />
     {/* Feed auto-discovery (<link rel="alternate">) is rendered by <SEO>. */}
     <SEO meta={meta} />
     {SITE.googleSiteVerification && (
